@@ -21,11 +21,11 @@ public class ConsultaApi {
         this.client = HttpClient.newHttpClient();
     }
 
-    private <T> T manejarRespuesta(HttpRequest request, Class<T> responseClass) {
+    private <T> T manejarRespuesta(HttpRequest request, Class<T> responseClass, int metodo) {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            if (response.statusCode() != 200) {
+            if (response.statusCode() != metodo) {
                 throw new RuntimeException("Error al consumir la API. Código de estado: " + response.statusCode());
             }
 
@@ -34,6 +34,7 @@ public class ConsultaApi {
             throw new RuntimeException("Error al consumir la API: " + e.getMessage(), e);
         }
     }
+
 
     public <T extends JsonValidacion> T consumirApiPost(String jsonBody, Class<T> responseClass, String endpoint){
         URI requestUri = URL_API.resolve(endpoint);
@@ -44,7 +45,7 @@ public class ConsultaApi {
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
 
-        return manejarRespuesta(request, responseClass);
+        return manejarRespuesta(request, responseClass, 201);
     }
 
     public <T extends JsonValidacion> T consumirApiGet(Class<T> responseClass, String endpoint){
@@ -55,8 +56,9 @@ public class ConsultaApi {
                 .uri(requestUri)
                 .build();
 
-        return manejarRespuesta(request, responseClass);
+        return manejarRespuesta(request, responseClass, 201);
     }
+
 
     public VideoDTO videos(String textoOriginal){
         String jsonBody = gson.toJson(textoOriginal);
