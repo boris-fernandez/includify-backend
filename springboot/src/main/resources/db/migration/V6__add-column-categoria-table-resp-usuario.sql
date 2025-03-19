@@ -1,0 +1,3 @@
+alter table RESPUESTAS_CANDIDATO
+ADD COLUMN categoria BIGINT,
+ADD CONSTRAINT fk_categoria_candidato FOREIGN KEY (categoria) REFERENCES CATEGORIAS(id);
