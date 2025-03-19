@@ -12,9 +12,9 @@ cloudinary.config(
 
 def upload_video(typeVideo):
     if typeVideo == "Tiktok":
-        foldervideo =  r"C:\Users\josue\OneDrive - Universidad Tecnologica del Peru\Desktop\Includify2.0\flaskAPI\video_final.mp4"
+        foldervideo =  "video_final.mp4"
     elif typeVideo == "Señas":
-        foldervideo = r"C:\Users\josue\OneDrive - Universidad Tecnologica del Peru\Desktop\Includify2.0\flaskAPI\Señas.mp4"
+        foldervideo = "Señas.mp4"
     else:
         return "Error: Tipo de video no valido", 400
 

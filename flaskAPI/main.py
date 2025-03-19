@@ -75,9 +75,12 @@ def create_cv():
 
         # Generar PDF
         url = createPDF.generate_pdf(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, trabajo, nombre, apellido, telefono, correo)
+        
+        respuesta = jsonify({
+            "pdf_url": url,
+        })
 
-        # Respuesta
-        return jsonify({"url_pdf": url}), 201
+        return respuesta, 201
 
     except Exception as e:
         return jsonify({"error": "Ocurrió un error en el servidor", "detalle": str(e)}), 500
@@ -85,6 +88,7 @@ def create_cv():
 # Endpoint POST
 @app.route('/match', methods=['POST'])
 def match_users():
+    
     pass
 
 if __name__ == '__main__':

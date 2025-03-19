@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, request
 import shutil
-from moviepy.video.fx import all as vfx
 import re
 import os
 from groq import Groq
@@ -34,10 +33,10 @@ lineasGuion = []
 palabrasGuion = []
 
 # Carpetas temporales 
-folderAudios = r"C:\Users\josue\OneDrive - Universidad Tecnologica del Peru\Desktop\INCLUDIFY2.0\flaskAPI\voz"
-folderVideos = r"C:\Users\josue\OneDrive - Universidad Tecnologica del Peru\Desktop\INCLUDIFY2.0\flaskAPI\media"
+folderAudios = "voz"
+folderVideos = "media"
 # Ruta de salida del video final
-finalVideo = r"C:\Users\josue\OneDrive - Universidad Tecnologica del Peru\Desktop\INCLUDIFY2.0\flaskAPI\video_final.mp4"
+finalVideo = "video_final.mp4"
 
 # Crear directorio si no existe
 if not os.path.exists(folderAudios):

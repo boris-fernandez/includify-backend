@@ -12,8 +12,8 @@ GROQ_API_KEY = os.getenv('API_Qroq')
 # Cliente de Groq
 client = Groq(api_key=GROQ_API_KEY)
 
-imgLenguaje = r"C:\Users\josue\OneDrive - Universidad Tecnologica del Peru\Desktop\Includify2.0\flaskAPI\imgLenguaje"
-video_path = os.path.join(r"C:\Users\josue\OneDrive - Universidad Tecnologica del Peru\Desktop\Includify2.0\flaskAPI", "Señas.mp4")
+imgLenguaje = "imgLenguaje"
+video_path = "Señas.mp4"
 
 os.makedirs(imgLenguaje, exist_ok=True)
 

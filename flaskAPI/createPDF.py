@@ -3,6 +3,7 @@ import cloudinary
 import cloudinary.uploader
 import pdfkit
 from groq import Groq
+from flask import jsonify
 
 # Configuration       
 cloudinary.config( 
@@ -15,7 +16,7 @@ cloudinary.config(
 #Api key
 GROQ_API_KEY = os.getenv('API_Qroq')
 
-config = pdfkit.configuration(wkhtmltopdf="C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe")
+config = pdfkit.configuration(wkhtmltopdf="../wkhtmltopdf/bin/wkhtmltopdf.exe")
 
 options = {
     "margin-top": "0mm",
@@ -250,7 +251,6 @@ def generate_pdf(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, trabajo, nombre, apell
 
     # Obtener la URL del archivo subido
     pdf_url = response["secure_url"]
-    print("PDF subido con éxito:", pdf_url)
     
     return pdf_url, 220
 
