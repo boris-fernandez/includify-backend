@@ -5,6 +5,7 @@ import videoSeñas
 import califications
 import publicVideo
 import createPDF
+import categoriasTrabajo
 
 app = Flask(__name__)
 
@@ -14,6 +15,8 @@ def create_video():
     inicio = time.time()  # Captura el tiempo de inicio
     
     data = request.get_json()
+
+    categoriaPuesto = categoriasTrabajo.generate_puesto(data["anuncio"])
     
     videoTiktok.limpiar_carpetas()
 
@@ -45,6 +48,7 @@ def create_video():
         "r8": score[7],
         "r9": score[8],
         "r10": score[9],
+        "categoria": categoriaPuesto,
     })
 
     print("programa terminado en "+str(fin-inicio)+" segundos")
