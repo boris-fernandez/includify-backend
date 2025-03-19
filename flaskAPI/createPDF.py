@@ -16,7 +16,8 @@ cloudinary.config(
 #Api key
 GROQ_API_KEY = os.getenv('API_Qroq')
 
-config = pdfkit.configuration(wkhtmltopdf="../wkhtmltopdf/bin/wkhtmltopdf.exe")
+# config = pdfkit.configuration(wkhtmltopdf="../wkhtmltopdf/bin/wkhtmltopdf.exe")
+config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
 
 options = {
     "margin-top": "0mm",
