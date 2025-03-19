@@ -38,17 +38,19 @@ def simplify_text_for_sign_language(frase):
     print(f"Texto simplificado: {frase}")
     return frase
 
-
 def clear_folders():
-    for folder in [imgLenguaje]:
+    for folder in [imgLenguaje]:  # Asegúrate de que imgLenguaje esté definido
         if os.path.exists(folder):
-            # Eliminar archivos dentro de la carpeta
+            # Intentar eliminar archivos dentro de la carpeta
             for archivo in os.listdir(folder):
-                archivo_path = os.path.join(folder, archivo)  # 🔹 Ruta correcta
-                if os.path.isfile(archivo_path):
-                    os.remove(archivo_path)  # Elimina archivos
-                elif os.path.isdir(archivo_path):
-                    shutil.rmtree(archivo_path)  # Elimina subcarpetas
+                archivo_path = os.path.join(folder, archivo)  # Ruta correcta
+                try:
+                    if os.path.isfile(archivo_path):
+                        os.remove(archivo_path)  # Elimina archivos
+                    elif os.path.isdir(archivo_path):
+                        shutil.rmtree(archivo_path)  # Elimina subcarpetas
+                except Exception as e:
+                    print(f"⚠️ No se pudo eliminar {archivo_path}: {e}")
 
 def normalize_text(texto):
     texto = texto.lower()
@@ -116,7 +118,7 @@ def crop_images(imagenes_ordenadas):
 
 def assemble_images_into_video(imagenes_ordenadas, output_path):
     """Genera un video con las imágenes en el orden correcto usando MoviePy."""
-    fps = 18
+    fps = 10
     if not imagenes_ordenadas:
         print("⚠️ No hay imágenes para generar el video.")
         return

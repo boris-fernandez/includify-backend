@@ -19,6 +19,9 @@ from moviepy.editor import VideoFileClip, AudioFileClip, concatenate_videoclips,
 GROQ_API_KEY = os.getenv('API_Qroq')
 API_PIXABAY = os.getenv('API_Pixabay')
 
+# Crear cliente de Groq
+client = Groq(api_key=GROQ_API_KEY)
+
 #Variables predefinidas
 subtitle_font_path = "Bungee-Regular"
 max_chars_per_line = 20
@@ -30,7 +33,7 @@ final_video_height = 1920
 lineasGuion = []
 palabrasGuion = []
 
-# Carpetas temporales
+# Carpetas temporales 
 folderAudios = r"C:\Users\josue\OneDrive - Universidad Tecnologica del Peru\Desktop\INCLUDIFY2.0\flaskAPI\voz"
 folderVideos = r"C:\Users\josue\OneDrive - Universidad Tecnologica del Peru\Desktop\INCLUDIFY2.0\flaskAPI\media"
 # Ruta de salida del video final
@@ -54,9 +57,6 @@ voices = [
     "es-CO-ElenaNeural",   # Español Colombia, Femenino
     "es-AR-ElenaNeural"    # Español Argentina, Femenino
 ]
-
-# Crear cliente de Groq
-client = Groq(api_key=GROQ_API_KEY)
 
 async def text_to_speech(text, output_file, voice):
     """Convierte texto a voz y guarda el archivo de audio."""
@@ -254,6 +254,9 @@ def join_videos_with_audios():
 
             print(f"✅ Video finalizado: {output_path}")
 
+    video.close()
+    audio.close()
+
     print("🎉 Todos los videos han sido procesados correctamente.")
 
 def join_final_video():
@@ -277,13 +280,16 @@ def join_final_video():
 def limpiar_carpetas():
     for folder in [folderAudios, folderVideos]:
         if os.path.exists(folder):
-            # Eliminar archivos dentro de la carpeta
+            # Intentar eliminar archivos dentro de la carpeta
             for archivo in os.listdir(folder):
                 archivo_path = os.path.join(folder, archivo)
-                if os.path.isfile(archivo_path):
-                    os.remove(archivo_path)  # Elimina archivos
-                elif os.path.isdir(archivo_path):
-                    shutil.rmtree(archivo_path)  # Elimina subcarpetas
+                try:
+                    if os.path.isfile(archivo_path):
+                        os.remove(archivo_path)  # Elimina archivos
+                    elif os.path.isdir(archivo_path):
+                        shutil.rmtree(archivo_path)  # Elimina subcarpetas
+                except Exception as e:
+                    print(f"⚠️ No se pudo eliminar {archivo_path}: {e}")
 
 def generate_video(data):
     #Obtener guion de 10 lineas con Qroq
@@ -298,7 +304,7 @@ def generate_video(data):
         if line != "":
             if contenido < 10:
                 lineasGuion.append(line)
-                guionCompleto=guionCompleto+line
+                guionCompleto=guionCompleto+line+" "
                 contenido+=1
             elif contenido < 20 and contenido >= 10:
                 palabrasGuion.append(line)
@@ -331,4 +337,5 @@ def generate_video(data):
     print("Uniendo videos...")
     join_final_video()
     print("Video final guardado correctamente.")
+    
     return jsonify({"message": guionCompleto})
