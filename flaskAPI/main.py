@@ -38,16 +38,7 @@ def create_video():
         "guion_video": guionCompleto,
         "video": urlVideoTiktok,
         "video_señas": urlSeñas,
-        "r1": score[0],
-        "r2": score[1],
-        "r3": score[2],
-        "r4": score[3],
-        "r5": score[4],
-        "r6": score[5],
-        "r7": score[6],
-        "r8": score[7],
-        "r9": score[8],
-        "r10": score[9],
+        "calificaciones": score,
         "categoria": categoriaPuesto,
     })
 
@@ -63,14 +54,16 @@ def create_cv():
         data = request.get_json()
 
         # Validar que todos los campos estén presentes
-        required_fields = ["r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "categoria", "nombre", "apellido", "telefono", "correo"]
+        required_fields = ["respuestas", "categoria", "nombre", "apellido", "telefono", "correo"]
         missing_fields = [field for field in required_fields if field not in data]
 
         if missing_fields:
             return jsonify({"error": "Faltan campos obligatorios", "missing_fields": missing_fields}), 400
 
+        lista = data["respuestas"]
+
         # Extraer valores
-        r1, r2, r3, r4, r5, r6, r7, r8, r9, r10 = data["r1"], data["r2"], data["r3"], data["r4"], data["r5"], data["r6"], data["r7"], data["r8"], data["r9"], data["r10"]
+        r1, r2, r3, r4, r5, r6, r7, r8, r9, r10 = lista[0], lista[1], lista[2], lista[3], lista[4], lista[5], lista[6], lista[7], lista[8], lista[9]
         trabajo, nombre, apellido, telefono, correo = data["categoria"], data["nombre"], data["apellido"], data["telefono"], data["correo"]
 
         # Generar PDF
