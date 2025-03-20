@@ -1,3 +1,4 @@
+import gc
 from flask import Flask, jsonify, request
 import shutil
 import re
@@ -71,7 +72,7 @@ async def create_audio():
     tasks = []
     for i, frase in enumerate(lineasGuion, start=1):
         output_audio = os.path.join(folderAudios, f"frase{i}.mp3")
-        tasks.append(text_to_speech(frase, output_audio, selected_voice))
+        await text_to_speech(frase, output_audio, selected_voice)
 
     await asyncio.gather(*tasks)  # Ejecutar todas las conversiones en paralelo
     print("Todos los audios han sido generados exitosamente.")
@@ -97,6 +98,7 @@ def create_guion_groq(anuncio):
         )
 
     guion = chat_completion.choices[0].message.content
+    gc.collect()
     return guion
 
 def videos_pixabay():
@@ -127,7 +129,7 @@ def videos_pixabay():
                 
                 if video_response.status_code == 200:
                     with open(file_name, "wb") as file:
-                        for chunk in video_response.iter_content(chunk_size=1024):
+                        for chunk in video_response.iter_content(chunk_size=8192):
                             file.write(chunk)
                     print(f"✅ Video guardado como {file_name}")
                 else:
@@ -136,6 +138,7 @@ def videos_pixabay():
                 print(f"⚠️ No se encontraron videos ni siquiera de tecnología para {query}")
         else:
             print(f"❌ Error en la solicitud de videos para {query}: {response.status_code}")
+        gc.collect()
 
 def resize_videos():
     for filename in os.listdir(folderVideos):
@@ -147,17 +150,18 @@ def resize_videos():
 
             # FFmpeg: escalar altura a 1920px y recortar el ancho al centro
             ffmpeg.input(video_path).filter(
-                "scale", "-2", final_video_height  # Escala manteniendo la proporción
+                "scale", "-2", final_video_height
             ).filter(
-                "crop", final_video_width, final_video_height  # Recorta el ancho
+                "crop", final_video_width, final_video_height
             ).output(
-                temp_output, vcodec="libx264", crf=23, preset="slow"
+                temp_output, vcodec="libx264", crf=23, preset="ultrafast"
             ).run(overwrite_output=True)
 
             # Reemplazar el archivo original con el nuevo
             os.replace(temp_output, video_path)
 
             print(f"✅ Video procesado correctamente: {filename}")
+        gc.collect()
 
     print("🎉 Todos los videos han sido corregidos y reescalados a 1080x1920.")
 
@@ -208,6 +212,7 @@ def subtitle_videos():
         # Reemplazar el video original con el subtitulado
         os.replace(temp_output_path, video_path)
         print(f"✅ Video procesado: {video_path}")
+        gc.collect()
 
     print("🚀 Todos los videos han sido procesados y subtitulados correctamente.")
 
@@ -218,7 +223,7 @@ def join_videos_with_audios():
 
         if os.path.exists(video_path) and os.path.exists(audio_path):
             # Cargar video y audio
-            video = VideoFileClip(video_path)
+            video = VideoFileClip(video_path, target_resolution=(1080, 1920))
             audio = AudioFileClip(audio_path)
 
             # Ajustar video a la duración del audio
@@ -249,10 +254,11 @@ def join_videos_with_audios():
 
             # Guardar video final
             output_path = os.path.join(folderVideos, f"final_video{i}.mp4")
-            video.write_videofile(output_path, codec="libx264", fps=30, threads=4)
+            video.write_videofile(finalVideo, fps=24, preset="ultrafast")
 
             print(f"✅ Video finalizado: {output_path}")
 
+    gc.collect()
     video.close()
     audio.close()
 
@@ -276,6 +282,8 @@ def join_final_video():
     for clip in clips:
         clip.close()
 
+    gc.collect()
+
 def limpiar_carpetas():
     for folder in [folderAudios, folderVideos]:
         if os.path.exists(folder):
@@ -289,6 +297,7 @@ def limpiar_carpetas():
                         shutil.rmtree(archivo_path)  # Elimina subcarpetas
                 except Exception as e:
                     print(f"⚠️ No se pudo eliminar {archivo_path}: {e}")
+    gc.collect()
 
 def generate_video(data):
     #Obtener guion de 10 lineas con Qroq
