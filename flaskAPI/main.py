@@ -47,36 +47,37 @@ def create_video():
     return respuesta, 201
 
 # Endpoint POST
-# Endpoint POST
 @app.route('/generatePdf', methods=['POST'])
 def create_cv():
     try:
+        print("1")
         # Intentar obtener JSON
         data = request.get_json()
+        print("2")
 
         if not data:
             return jsonify({"error": "El cuerpo de la solicitud está vacío o no es un JSON válido"}), 400
-
+        print("3")
         # Validar que todos los campos estén presentes
         required_fields = ["respuestas", "categoria", "nombre", "apellido", "telefono", "correo"]
         missing_fields = [field for field in required_fields if field not in data]
-
+        print("4")
         if missing_fields:
             return jsonify({"error": "Faltan campos obligatorios", "missing_fields": missing_fields}), 400
-
+        print("5")
         # Validar que "respuestas" sea una lista con 10 elementos
         if not isinstance(data["respuestas"], list):
             return jsonify({"error": "El campo 'respuestas' debe ser una lista"}), 400
-
+        print("6")
         if len(data["respuestas"]) != 10:
             return jsonify({"error": "La lista 'respuestas' debe contener exactamente 10 elementos"}), 400
-
+        print("7")
         # Extraer valores
         try:
             r1, r2, r3, r4, r5, r6, r7, r8, r9, r10 = data["respuestas"]
         except ValueError:
             return jsonify({"error": "La lista 'respuestas' contiene un número incorrecto de elementos"}), 400
-
+        print("8")
         trabajo = data.get("categoria")
         nombre = data.get("nombre")
         apellido = data.get("apellido")
