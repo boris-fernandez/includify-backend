@@ -62,6 +62,7 @@ def create_cv():
             return jsonify({"error": "Faltan campos obligatorios", "missing_fields": missing_fields}), 400
 
         lista = data["respuestas"]
+        lista = [int(x) for x in lista]
 
         # Extraer valores
         r1, r2, r3, r4, r5, r6, r7, r8, r9, r10 = lista[0], lista[1], lista[2], lista[3], lista[4], lista[5], lista[6], lista[7], lista[8], lista[9]
