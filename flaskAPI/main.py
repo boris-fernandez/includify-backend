@@ -47,11 +47,15 @@ def create_video():
     return respuesta, 201
 
 # Endpoint POST
+# Endpoint POST
 @app.route('/generatePdf', methods=['POST'])
 def create_cv():
     try:
         # Intentar obtener JSON
         data = request.get_json()
+
+        if not data:
+            return jsonify({"error": "El cuerpo de la solicitud está vacío o no es un JSON válido"}), 400
 
         # Validar que todos los campos estén presentes
         required_fields = ["respuestas", "categoria", "nombre", "apellido", "telefono", "correo"]
@@ -60,23 +64,41 @@ def create_cv():
         if missing_fields:
             return jsonify({"error": "Faltan campos obligatorios", "missing_fields": missing_fields}), 400
 
-        lista = data["respuestas"]
+        # Validar que "respuestas" sea una lista con 10 elementos
+        if not isinstance(data["respuestas"], list):
+            return jsonify({"error": "El campo 'respuestas' debe ser una lista"}), 400
+
+        if len(data["respuestas"]) != 10:
+            return jsonify({"error": "La lista 'respuestas' debe contener exactamente 10 elementos"}), 400
 
         # Extraer valores
-        r1, r2, r3, r4, r5, r6, r7, r8, r9, r10 = lista[0], lista[1], lista[2], lista[3], lista[4], lista[5], lista[6], lista[7], lista[8], lista[9]
-        trabajo, nombre, apellido, telefono, correo = data["categoria"], data["nombre"], data["apellido"], data["telefono"], data["correo"]
+        try:
+            r1, r2, r3, r4, r5, r6, r7, r8, r9, r10 = data["respuestas"]
+        except ValueError:
+            return jsonify({"error": "La lista 'respuestas' contiene un número incorrecto de elementos"}), 400
+
+        trabajo = data.get("categoria")
+        nombre = data.get("nombre")
+        apellido = data.get("apellido")
+        telefono = data.get("telefono")
+        correo = data.get("correo")
+
+        # Validar que los campos sean cadenas no vacías
+        for field, value in {"categoria": trabajo, "nombre": nombre, "apellido": apellido, "telefono": telefono, "correo": correo}.items():
+            if not isinstance(value, str) or not value.strip():
+                return jsonify({"error": f"El campo '{field}' debe ser una cadena no vacía"}), 400
 
         # Generar PDF
-        url = createPDF.generate_pdf(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, trabajo, nombre, apellido, telefono, correo)
-        
-        respuesta = jsonify({
-            "pdf_url": url,
-        })
+        try:
+            url = createPDF.generate_pdf(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, trabajo, nombre, apellido, telefono, correo)
+        except Exception as e:
+            return jsonify({"error": "Error al generar el PDF", "detalle": str(e)}), 500
 
-        return respuesta, 201
+        return jsonify({"pdf_url": url}), 201
 
     except Exception as e:
-        return jsonify({"error": "Ocurrió un error en el servidor", "detalle": str(e)}), 500
+        return jsonify({"error": "Error interno del servidor", "detalle": str(e)}), 500
+
     
 # Endpoint POST
 @app.route('/match', methods=['POST'])
