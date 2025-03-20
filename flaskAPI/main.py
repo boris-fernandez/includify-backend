@@ -1,3 +1,4 @@
+import traceback
 import time
 from flask import Flask, jsonify, request
 import videoTiktok
@@ -76,7 +77,9 @@ def create_cv():
         return respuesta, 201
 
     except Exception as e:
+        print(traceback.format_exc())  # 🔍 Esto imprimirá el error completo en la consola de Render
         return jsonify({"error": "Ocurrió un error en el servidor", "detalle": str(e)}), 500
+
     
 # Endpoint POST
 @app.route('/match', methods=['POST'])
