@@ -45,7 +45,7 @@ def create_video():
 
     print("programa terminado en "+str(fin-inicio)+" segundos")
 
-    return respuesta, 201
+    return respuesta, 200
 
 # Endpoint POST
 @app.route('/generatePdf', methods=['POST'])
@@ -72,10 +72,10 @@ def create_cv():
         url = createPDF.generate_pdf(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, trabajo, nombre, apellido, telefono, correo)
         
         respuesta = jsonify({
-            "pdf_url": url,
+            "pdf_url": url[0],
         })
 
-        return respuesta, 201
+        return respuesta, 200
 
     except Exception as e:
         print(traceback.format_exc())  # 🔍 Esto imprimirá el error completo en la consola de Render
