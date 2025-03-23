@@ -87,7 +87,7 @@ def create_cv():
     
 @app.route('/match', methods=['GET'])
 def match_users():
-    primary_key = request.args.get("pk_usuario")  # Obtener de la URL
+    primary_key = int(request.args.get("pk_usuario"))  # Obtener de la URL
     if not primary_key:
         return jsonify({"error": "Falta el parámetro 'pk_usuario'"}), 400
     
