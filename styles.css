@@ -794,15 +794,12 @@ h5{
         font-size: 3rem;
     }
 
-    .contenedorLogin {
+    .contenedorLogin, .contenedorRegister{
         margin-right: 0px;
+        margin-left: 0px;
     }
 
-    .imgLogin {
-        display: none;
-    }   
-
-    .imgRegister {
+    .imgLogin, .imgRegister {
         display: none;
     }   
 }
