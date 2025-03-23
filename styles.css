@@ -801,4 +801,8 @@ h5{
     .imgLogin {
         display: none;
     }   
+
+    .imgRegister {
+        display: none;
+    }   
 }
