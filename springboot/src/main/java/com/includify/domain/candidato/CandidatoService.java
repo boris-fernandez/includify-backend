@@ -26,6 +26,9 @@ public class CandidatoService {
 
     public ObtenerCandidatoDTO obtenerCandidato(@NonNull Long id){
         Optional<Candidato> candidato = candidatoRepository.findById(id);
+        if (candidato.isEmpty()){
+            throw new ValidacionException("El id del usuario no existe");
+        }
         return candidato.map(ObtenerCandidatoDTO::new)
                 .orElseThrow(() -> new ValidacionException("El usuario no existe"));
     }
