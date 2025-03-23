@@ -34,8 +34,6 @@ public class SecurityConfigurations {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authRequest ->
                         authRequest.requestMatchers("/auth/**").permitAll()
-                                .requestMatchers("/video/**").permitAll()
-                                .requestMatchers("/cv/**").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(sessionManage ->
                         sessionManage.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

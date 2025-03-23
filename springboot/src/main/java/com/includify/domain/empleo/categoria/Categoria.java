@@ -1,4 +1,4 @@
-package com.includify.domain.empleo;
+package com.includify.domain.empleo.categoria;
 
 import jakarta.persistence.*;
 import lombok.*;

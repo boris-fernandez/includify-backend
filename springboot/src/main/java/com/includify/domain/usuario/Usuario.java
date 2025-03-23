@@ -1,5 +1,7 @@
 package com.includify.domain.usuario;
 
+import com.includify.domain.empleo.Empleo;
+import com.includify.domain.empresa.Empresa;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,5 +23,4 @@ public class Usuario {
     private  String correo;
 
     private String contrasena;
-
 }

@@ -1,9 +1,10 @@
 package com.includify.controller;
 
-import com.includify.domain.MensajeDTO;
 import com.includify.domain.candidato.CandidatoService;
 import com.includify.domain.candidato.dto.ActualizarCvDTO;
+import com.includify.domain.candidato.dto.MensajeExito;
 import com.includify.domain.candidato.dto.ObtenerCandidatoDTO;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +22,10 @@ public class CandidatoController {
         return ResponseEntity.ok(candidatoService.obtenerCandidato(id));
     }
 
-    @PostMapping("update/cv")
-    public ResponseEntity<MensajeDTO> actualizarCv (@RequestBody @Valid ActualizarCvDTO dto){
-        return ResponseEntity.ok(candidatoService.ActualizarCv(dto));
+    @PutMapping("update/pdf_url")
+    @Transactional
+    public ResponseEntity<MensajeExito> actualizarCv (@RequestBody @Valid ActualizarCvDTO dto){
+        candidatoService.ActualizarCv(dto);
+        return ResponseEntity.noContent().build();
     }
 }

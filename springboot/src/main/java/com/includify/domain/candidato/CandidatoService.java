@@ -1,7 +1,8 @@
 package com.includify.domain.candidato;
 
-import com.includify.domain.MensajeDTO;
+import com.includify.domain.ValidacionException;
 import com.includify.domain.candidato.dto.ActualizarCvDTO;
+import com.includify.domain.candidato.dto.MensajeExito;
 import com.includify.domain.candidato.dto.ObtenerCandidatoDTO;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +27,10 @@ public class CandidatoService {
     public ObtenerCandidatoDTO obtenerCandidato(@NonNull Long id){
         Optional<Candidato> candidato = candidatoRepository.findById(id);
         return candidato.map(ObtenerCandidatoDTO::new)
-                .orElseThrow(() -> new RuntimeException("El usuario no existe"));
+                .orElseThrow(() -> new ValidacionException("El usuario no existe"));
     }
 
-    public MensajeDTO ActualizarCv(ActualizarCvDTO dto) {
+    public void ActualizarCv(ActualizarCvDTO dto) {
         Cloudinary cloudinary = new Cloudinary(cludinaryUrl);
         try {
             Map<String, Object> uploadResult = cloudinary.uploader().upload(
@@ -43,14 +44,12 @@ public class CandidatoService {
             String cvUrl = (String) uploadResult.get("secure_url");
 
             Candidato candidato = candidatoRepository.findById(dto.id())
-                    .orElseThrow(() -> new RuntimeException("Candidato no encontrado"));
+                    .orElseThrow(() -> new ValidacionException("Candidato no existe"));
 
             candidato.actualizarCv(cvUrl);
             candidatoRepository.save(candidato);
-
-            return new MensajeDTO("CV actualizado exitoamente!");
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ValidacionException("Ocurrio un error inesperado");
         }
 
     }

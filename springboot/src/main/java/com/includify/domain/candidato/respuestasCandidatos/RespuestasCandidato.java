@@ -1,6 +1,7 @@
-package com.includify.domain.respuestasUsuario;
+package com.includify.domain.candidato.respuestasCandidatos;
 
-import com.includify.domain.empleo.Categoria;
+import com.includify.domain.candidato.Candidato;
+import com.includify.domain.empleo.categoria.Categoria;
 import com.includify.domain.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,15 +14,15 @@ import lombok.*;
 @Table(name = "RESPUESTAS_CANDIDATO")
 @EqualsAndHashCode(of = "id")
 @Entity
-public class RespuestasUsuario {
+public class RespuestasCandidato {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_usuario")
-    private Usuario idUsuario;
+    @JoinColumn(name = "id_candidato")
+    private Candidato idCandidato;
 
     private int r1;
 

@@ -2,15 +2,18 @@ package com.includify.infra.apis;
 
 import com.includify.infra.apis.dto.*;
 import com.nimbusds.jose.shaded.gson.Gson;
+import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 
+@Component
 public class ConsultaApi {
 
-    private static URI URL_API = URI.create("http://localhost:5050/");
+    private static URI URL_API = URI.create("https://includify-backend.onrender.com/");
 
     private Gson gson;
 
@@ -18,25 +21,11 @@ public class ConsultaApi {
 
     public ConsultaApi(){
         this.gson = new Gson();
-        this.client = HttpClient.newHttpClient();
-    }
-
-    private <T> T manejarRespuesta(HttpRequest request, Class<T> responseClass, int metodo) {
-        try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() != metodo) {
-                throw new RuntimeException("Error al consumir la API. Código de estado: " + response.statusCode());
-            }
-
-            return new Gson().fromJson(response.body(), responseClass);
-        } catch (Exception e) {
-            throw new RuntimeException("Error al consumir la API: " + e.getMessage(), e);
-        }
+        this.client = HttpClient.newBuilder().build();
     }
 
 
-    public <T extends JsonValidacion> T consumirApiPost(String jsonBody, Class<T> responseClass, String endpoint){
+    private <T extends JsonValidacion> T consumirApiPost(String jsonBody, Class<T> responseClass, String endpoint){
         URI requestUri = URL_API.resolve(endpoint);
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -44,31 +33,48 @@ public class ConsultaApi {
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
-
-        return manejarRespuesta(request, responseClass, 201);
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println(response.statusCode());
+            return new Gson()
+                    .fromJson(response.body(), responseClass);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al consumir la API", e);
+        }
     }
 
-    public <T extends JsonValidacion> T consumirApiGet(Class<T> responseClass, String endpoint){
+    private <T extends JsonValidacion> T consumirApiGet(Class<T> responseClass, String endpoint){
         URI requestUri = URL_API.resolve(endpoint);
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(requestUri)
                 .build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println(response.statusCode());
+            if (response.statusCode() != 200) {
+                throw new RuntimeException("Error al consumir la API. Código de estado: " + response.statusCode());
+            }
 
-        return manejarRespuesta(request, responseClass, 201);
+            return new Gson()
+                    .fromJson(response.body(), responseClass);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al consumir la API: " + e.getMessage(), e);
+        }
     }
 
 
-    public VideoDTO videos(String textoOriginal){
-        String jsonBody = gson.toJson(textoOriginal);
+    public VideoDTO videos(String anuncio){
+        String jsonBody = gson.toJson(anuncio);
         return consumirApiPost(jsonBody, VideoDTO.class, "generateVideo");
         
     }
 
-    public PdfDTO pdf(EnviarGenerarPdfDTO enviarGenerarPdfDTO){
-        String jsonBody = enviarGenerarPdfDTO.generarJson();
-        return consumirApiPost(jsonBody, PdfDTO.class, "generatePdf");
+    public CvDTO cv(EnviarCandidatoDTO enviarCandidato){
+        String jsonBody = gson.toJson(enviarCandidato);
+        System.out.println(jsonBody);
+        return consumirApiPost(jsonBody, CvDTO.class, "generatePdf");
     }
 
     public MatchDTO match(){

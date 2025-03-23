@@ -22,10 +22,6 @@ public class Empresa {
 
     private String telefono;
 
-    private String ciudad;
-
-    private String direccion;
-
     private String pais;
 
     @OneToOne(fetch = FetchType.EAGER)

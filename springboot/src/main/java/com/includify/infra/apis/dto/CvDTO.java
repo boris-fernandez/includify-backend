@@ -1,6 +1,6 @@
 package com.includify.infra.apis.dto;
 
-public record PdfDTO(
-        String pdf
+public record CvDTO(
+        String pdf_url
 ) implements JsonValidacion{
 }

@@ -31,6 +31,6 @@ public class Candidato {
     private Usuario usuario;
 
     public void actualizarCv(String cv){
-        if (cv != null) this.cv = cv;
+        this.cv = cv;
     }
 }

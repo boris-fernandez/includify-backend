@@ -1,6 +1,7 @@
-package com.includify.domain.respuestasEmpleo;
+package com.includify.domain.empleo.respuestasEmpleo;
 
 import com.includify.domain.empleo.Empleo;
+import com.includify.domain.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,9 +16,12 @@ import lombok.*;
 public class RespuestasEmpleo {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_empleo")
-    private Empleo id;
+    private Empleo empleo;
 
     private int r1;
 

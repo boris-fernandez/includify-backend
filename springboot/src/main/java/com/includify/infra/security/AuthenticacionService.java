@@ -1,8 +1,11 @@
 package com.includify.infra.security;
 
+import com.includify.domain.ValidacionException;
 import com.includify.domain.candidato.Candidato;
 import com.includify.domain.candidato.CandidatoRepository;
 import com.includify.domain.candidato.dto.RegistrarCandidatoDTO;
+import com.includify.domain.candidato.respuestasCandidatos.RespuestasCandidato;
+import com.includify.domain.candidato.respuestasCandidatos.RespuestasUsuarioRepository;
 import com.includify.domain.empresa.Empresa;
 import com.includify.domain.empresa.EmpresaRepository;
 import com.includify.domain.empresa.dto.RegistrarEmpresaDTO;
@@ -10,10 +13,19 @@ import com.includify.domain.usuario.Usuario;
 import com.includify.domain.usuario.UsuarioRepository;
 import com.includify.domain.usuario.dto.LoginDTO;
 import com.includify.domain.usuario.dto.MensajeDTO;
+import com.includify.domain.usuario.dto.RespuestaJWTDTO;
+import com.includify.infra.apis.ConsultaApi;
+import com.includify.infra.apis.dto.CvDTO;
+import com.includify.infra.apis.dto.EnviarCandidatoDTO;
+import com.nimbusds.jose.JOSEException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -30,82 +42,97 @@ public class AuthenticacionService {
     private EmpresaRepository empresaRepository;
 
     @Autowired
+    private RespuestasUsuarioRepository respuestasUsuarioRepository;
+
+    @Autowired
     private TokenService tokenService;
 
-    public HashMap<String, String> login(LoginDTO login) throws Exception {
-        try {
-            HashMap<String, String> jwt = new HashMap<>();
-            Optional<Usuario> user = usuarioRepository.findByCorreo(login.correo());
+    @Autowired
+    private ConsultaApi consultaApi;
 
-            if (user.isEmpty()){
-                jwt.put("error", "User no registrado!");
-                return jwt;
-            }
+    public RespuestaJWTDTO login(LoginDTO login) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, JOSEException {
+        Optional<Usuario> user = usuarioRepository.findByCorreo(login.correo());
+        System.out.println();
 
-            if (verificarContrasena(login.contrasena(), user.get().getContrasena())){
-                jwt.put("jwt", tokenService.generarToken(user.get().getId()));
-            }else {
-                jwt.put("error", "Authetication failed");
-            }
-            return jwt;
-        }catch (Exception e){
-            throw new Exception(e.toString());
+        if (user.isEmpty()) {
+            throw new ValidacionException("Usuario no encontrado");
         }
 
+        if (verificarContrasena(login.contrasena(), user.get().getContrasena())){
+            RespuestaJWTDTO respuestaJWTDTO = new RespuestaJWTDTO(tokenService.generarToken(user.get().getId()));
+            return respuestaJWTDTO;
+        }
+        throw new ValidacionException("Authenticacion fallida");
     }
 
+    @Transactional
     public Candidato registerCandidato (RegistrarCandidatoDTO candidatoDTO) {
-        Optional<Usuario> verificar = usuarioRepository.findByCorreo(candidatoDTO.correo());
+        Optional<Usuario> verificar = usuarioRepository.findByCorreo(candidatoDTO.usuario().correo());
+
         if (verificar.isPresent()){
-            new MensajeDTO("El correo ya existe prueba con otro");
+            throw new ValidacionException("El correo ya existe prueba con otro");
         }
 
         Usuario usuario = Usuario.builder()
-                .correo(candidatoDTO.correo())
-                .contrasena(candidatoDTO.contrasena())
+                .correo(candidatoDTO.usuario().correo())
+                .contrasena(candidatoDTO.usuario().contrasena())
                 .build();
-
-        Candidato candidato = Candidato.builder()
-                .username(candidatoDTO.username())
-                .apellidos(candidatoDTO.apellidos())
-                .telefono(candidatoDTO.telefono())
-                .cv(candidatoDTO.cv())
-                .build();
-
-
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         usuario.setContrasena(encoder.encode(usuario.getContrasena()));
-
         usuarioRepository.save(usuario);
+
+        EnviarCandidatoDTO enviarCandidato = new EnviarCandidatoDTO(
+                candidatoDTO.respuestas(),candidatoDTO.categoria(),candidatoDTO.nombre(), candidatoDTO.apellidos(), candidatoDTO.telefono(),
+                candidatoDTO.usuario().correo());
+        CvDTO cv = consultaApi.cv(enviarCandidato);
+        System.out.println(cv.pdf_url());
+        Candidato candidato = Candidato.builder()
+                .username(candidatoDTO.nombre())
+                .apellidos(candidatoDTO.apellidos())
+                .telefono(candidatoDTO.telefono())
+                .cv(cv.pdf_url())
+                .usuario(usuario)
+                .build();
         candidatoRepository.save(candidato);
+
+        RespuestasCandidato respuestasUsuario = RespuestasCandidato.builder()
+                .idCandidato(candidato)
+                .r1(candidatoDTO.respuestas().get(0))
+                .r2(candidatoDTO.respuestas().get(1))
+                .r3(candidatoDTO.respuestas().get(2))
+                .r4(candidatoDTO.respuestas().get(3))
+                .r5(candidatoDTO.respuestas().get(4))
+                .r6(candidatoDTO.respuestas().get(5))
+                .r7(candidatoDTO.respuestas().get(6))
+                .r8(candidatoDTO.respuestas().get(7))
+                .r9(candidatoDTO.respuestas().get(8))
+                .r10(candidatoDTO.respuestas().get(9))
+                .build();
+        respuestasUsuarioRepository.save(respuestasUsuario);
 
         return candidato;
     }
 
     public Empresa registerEmpresa (RegistrarEmpresaDTO empresaDTO) {
-        Optional<Usuario> verificar = usuarioRepository.findByCorreo(empresaDTO.correo());
+        Optional<Usuario> verificar = usuarioRepository.findByCorreo(empresaDTO.usuario().correo());
         if (verificar.isPresent()){
-            new MensajeDTO("El correo ya existe prueba con otro");
+            throw new ValidacionException("El correo ya existe prueba con otro");
         }
         Usuario usuario = Usuario.builder()
-                .correo(empresaDTO.correo())
-                .contrasena(empresaDTO.contrasena())
+                .correo(empresaDTO.usuario().correo())
+                .contrasena(empresaDTO.usuario().contrasena())
                 .build();
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        usuario.setContrasena(encoder.encode(usuario.getContrasena()));
+        usuarioRepository.save(usuario);
 
         Empresa empresa = Empresa.builder()
                 .nombre(empresaDTO.nombre())
                 .telefono(empresaDTO.telefono())
-                .ciudad(empresaDTO.ciudad())
-                .direccion(empresaDTO.direccion())
                 .pais(empresaDTO.pais())
+                .usuario(usuario)
                 .build();
-
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        usuario.setContrasena(encoder.encode(usuario.getContrasena()));
-
-        usuarioRepository.save(usuario);
         empresaRepository.save(empresa);
-
         return empresa;
     }
 

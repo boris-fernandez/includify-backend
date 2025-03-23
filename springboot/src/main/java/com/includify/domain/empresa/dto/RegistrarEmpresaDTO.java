@@ -1,12 +1,17 @@
 package com.includify.domain.empresa.dto;
 
+import com.includify.domain.usuario.dto.CreateUserDTO;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+
 public record RegistrarEmpresaDTO(
+        @NotBlank
         String nombre,
-        String correo,
-        String contrasena,
+        @Valid
+        CreateUserDTO usuario,
+        @NotBlank
         String telefono,
-        String ciudad,
-        String direccion,
+        @NotBlank
         String pais
 ) {
 }

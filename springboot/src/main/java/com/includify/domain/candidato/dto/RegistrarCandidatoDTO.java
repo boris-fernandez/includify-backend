@@ -1,14 +1,29 @@
 package com.includify.domain.candidato.dto;
 
+import com.includify.domain.usuario.Usuario;
+import com.includify.domain.usuario.dto.CreateUserDTO;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.NonNull;
 
+import java.util.List;
+
 public record RegistrarCandidatoDTO(
-        String username,
-        String correo,
-        String contrasena,
-        String apellidos,
-        String telefono,
+        @Valid
+        CreateUserDTO usuario,
         @NonNull
-        String cv
+        @NotBlank
+        String nombre,
+        @NonNull
+        @NotBlank
+        String apellidos,
+        @NonNull
+        String telefono,
+        @NotNull(message = "Las calificaciones no pueden ser nulas")
+        @Size(min = 10, max = 10, message = "Deben haber excatamenta 10 respuetas")
+        List< @Min(value = 0, message = "Cada respuesta no debe ser menor a 0")
+        @Max(value = 3, message = "Cada respuesta no puede ser mayor a 3") Integer> respuestas,
+        @NonNull
+        String categoria
 ) {
 }
