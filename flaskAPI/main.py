@@ -9,6 +9,7 @@ import createPDF
 import categoriasTrabajo
 import IncludifySql
 import WorkClustering
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -85,7 +86,7 @@ def create_cv():
 
     
 # Endpoint POST
-@app.route('/match', methods=['POST'])
+@app.route('/match', methods=['GET'])
 def match_users():
     data = request.get_json()
     primary_key = data.get("pk_usuario")  # Usar .get() para evitar errores si no existe
