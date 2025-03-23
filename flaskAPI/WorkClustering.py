@@ -61,7 +61,7 @@ def procesarClustering(nombres, clientes, columns):
         # print(f"Cluster {ncluster}: {listaTemporal}")
         random.shuffle(listaTemporal)
         for elemento in listaTemporal:
-            listaRecomendaciones.append(elemento)
+            listaRecomendaciones.append(int(elemento))
         # print("fin cluster")
 
     return(listaRecomendaciones)

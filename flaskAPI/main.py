@@ -148,7 +148,11 @@ def match_users():
     recomendacion = WorkClustering.procesarClustering(pks, datos, columns)
     print(recomendacion)
     
-    return recomendacion, 200
+    respuesta = jsonify({
+        "recomendacion": recomendacion
+    })
+    
+    return respuesta
 
 if __name__ == '__main__':
     app.run(debug=True)
