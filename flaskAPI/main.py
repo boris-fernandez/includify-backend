@@ -7,6 +7,8 @@ import califications
 import publicVideo
 import createPDF
 import categoriasTrabajo
+import IncludifySql
+import WorkClustering
 
 app = Flask(__name__)
 
@@ -85,8 +87,67 @@ def create_cv():
 # Endpoint POST
 @app.route('/match', methods=['POST'])
 def match_users():
+    data = request.get_json()
+    primary_key = data.get("pk_usuario")  # Usar .get() para evitar errores si no existe
     
-    pass
+    # Proteger contra inyección SQL usando parámetros seguros
+    respuesta = IncludifySql.exSQL(f"SELECT candidatos.id_usuario, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, respuestas_candidato.id_categoria FROM respuestas_candidato INNER JOIN candidatos ON respuestas_candidato.id_candidato = candidatos.id WHERE candidatos.id_usuario = {primary_key}")
+    usuario = [] # <- Lista que guarda los datos de las respustas del candidato
+    for fila in respuesta:
+        for i in range(12):
+            usuario.append(fila[i])
+
+    re1 = usuario[1]
+    categoria = usuario[11]
+    del usuario[1]
+    del usuario[10]
+
+    todos = IncludifySql.exSQL(f"select empleos.id,r2,r3,r4,r5,r6,r7,r8,r9,r10 from respuestas_empleo inner join empleos on id_empleo=empleos.id where id_categoria={categoria};")
+
+    data_lists = [list(t) for t in todos]
+    # print(data_lists)
+
+    pks = ["usuario"]
+    r2 = [usuario[1]]
+    r3 = [usuario[2]]
+    r4 = [usuario[3]]
+    r5 = [usuario[4]]
+    r6 = [usuario[5]]
+    r7 = [usuario[6]]
+    r8 = [usuario[7]]
+    r9 = [usuario[8]]
+    r10 = [usuario[9]]
+
+    for i in range(len(data_lists)):
+        pks.append(data_lists[i][0])
+        r2.append(data_lists[i][1])
+        r3.append(data_lists[i][2])
+        r4.append(data_lists[i][3])
+        r5.append(data_lists[i][4])
+        r6.append(data_lists[i][5])
+        r7.append(data_lists[i][6])
+        r8.append(data_lists[i][7])
+        r9.append(data_lists[i][8])
+        r10.append(data_lists[i][9])
+
+    datos = pd.DataFrame({"r2" : r2,
+                             "r3" : r3,
+                             "r4" : r4,
+                             "r5" : r5,
+                             "r6" : r6,
+                             "r7" : r7,
+                             "r8" : r8,
+                             "r9" : r9,
+                             "r10" : r10})
+    
+    columns=["r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10"]
+
+    pks = list(map(str, pks))
+
+    recomendacion = WorkClustering.procesarClustering(pks, datos, columns)
+    print(recomendacion)
+    
+    return recomendacion, 200
 
 if __name__ == '__main__':
     app.run(debug=True)
