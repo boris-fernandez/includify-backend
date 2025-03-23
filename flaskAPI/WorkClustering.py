@@ -49,7 +49,7 @@ def procesarClustering(nombres, clientes, columns):
     # print("fin cluster")
 
     for elemento in listaTemporal:
-        listaRecomendaciones.append(elemento)
+        listaRecomendaciones.append(int(elemento))
 
     for ncluster in range(7):
         listaTemporal = []
