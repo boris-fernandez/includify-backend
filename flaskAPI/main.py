@@ -85,11 +85,11 @@ def create_cv():
         return jsonify({"error": "Ocurrió un error en el servidor", "detalle": str(e)}), 500
 
     
-# Endpoint POST
 @app.route('/match', methods=['GET'])
 def match_users():
-    data = request.get_json()
-    primary_key = data.get("pk_usuario")  # Usar .get() para evitar errores si no existe
+    primary_key = request.args.get("pk_usuario")  # Obtener de la URL
+    if not primary_key:
+        return jsonify({"error": "Falta el parámetro 'pk_usuario'"}), 400
     
     # Proteger contra inyección SQL usando parámetros seguros
     respuesta = IncludifySql.exSQL(f"SELECT candidatos.id_usuario, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, respuestas_candidato.id_categoria FROM respuestas_candidato INNER JOIN candidatos ON respuestas_candidato.id_candidato = candidatos.id WHERE candidatos.id_usuario = {primary_key}")
