@@ -1,22 +1,31 @@
-import mysql.connector
+from mysql.connector import pooling
+import os
 
-# Función para obtener una conexión nueva
+# Crear un pool de conexiones con 5 conexiones disponibles
+dbconfig = {
+    "user": os.getenv('MYSQL_USER'),
+    "host": os.getenv('MYSQL_HOST'),
+    "password": os.getenv('MYSQL_PASSWORD'),
+    "database": os.getenv('MYSQL_DATABASE'),
+    "port": os.getenv('MYSQL_PORT'),
+}
+
+pool = pooling.MySQLConnectionPool(pool_name="mypool",
+                                   pool_size=1,
+                                   **dbconfig)
+
 def get_connection():
-    return mysql.connector.connect(
-        user='ab66cd_includi',
-        host='MYSQL1001.site4now.net',
-        password='Includify@2025!',
-        database='db_ab66cd_includi',
-        port=3306
-    )
+    """Obtener una conexión del pool."""
+    return pool.get_connection()
 
 def exSQL(consulta):
-    conexion = get_connection()  # Crear una nueva conexión en cada consulta
+    """Ejecuta una consulta SQL y devuelve los resultados."""
+    conexion = get_connection()
     miCursor = conexion.cursor()
 
     miCursor.execute(consulta)
     response = miCursor.fetchall()
 
     miCursor.close()
-    conexion.close()
+    conexion.close()  # Devuelve la conexión al pool
     return response

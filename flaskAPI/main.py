@@ -75,7 +75,7 @@ def create_cv():
         url = createPDF.generate_pdf(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, trabajo, nombre, apellido, telefono, correo)
         
         respuesta = jsonify({
-            "pdf_url": url[0],
+            "pdf_url": url[0], 
         })
 
         return respuesta
