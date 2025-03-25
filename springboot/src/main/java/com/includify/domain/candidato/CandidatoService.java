@@ -4,12 +4,15 @@ import com.includify.domain.ValidacionException;
 import com.includify.domain.candidato.dto.ActualizarCvDTO;
 import com.includify.domain.candidato.dto.MensajeExito;
 import com.includify.domain.candidato.dto.ObtenerCandidatoDTO;
+import com.includify.domain.usuario.Usuario;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.cloudinary.*;
 import com.cloudinary.utils.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -33,27 +36,35 @@ public class CandidatoService {
                 .orElseThrow(() -> new ValidacionException("El usuario no existe"));
     }
 
-    public void ActualizarCv(ActualizarCvDTO dto) {
+    public void ActualizarCv(MultipartFile file) {
+        Usuario usuarioAutenticado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Optional <Candidato> candidato = candidatoRepository.findByUsuario_Id(usuarioAutenticado.getId());
+
+        if (candidato.isEmpty()){
+            throw new ValidacionException("No existe el candidato");
+        }
+
         Cloudinary cloudinary = new Cloudinary(cludinaryUrl);
+
         try {
             Map<String, Object> uploadResult = cloudinary.uploader().upload(
-                    dto.file().getInputStream(), ObjectUtils.asMap(
+                    file.getBytes(),
+                    ObjectUtils.asMap(
+                            "folder", "cv",
+                            "use_filename", false,
+                            "unique_filename", true,
+                            "overwrite", true,
                             "resource_type", "raw",
-                            "use_filename", true,
-                            "unique_filename", false,
-                            "overwrite", true
-                    ));
+                            "format", "pdf"
+                    )
+            );
 
             String cvUrl = (String) uploadResult.get("secure_url");
-
-            Candidato candidato = candidatoRepository.findById(dto.id())
-                    .orElseThrow(() -> new ValidacionException("Candidato no existe"));
-
-            candidato.actualizarCv(cvUrl);
-            candidatoRepository.save(candidato);
+            candidato.get().actualizarCv(cvUrl);
+            candidatoRepository.save(candidato.get());
         } catch (Exception e) {
             throw new ValidacionException("Ocurrio un error inesperado");
         }
-
     }
 }

@@ -6,6 +6,8 @@ import com.includify.domain.candidato.CandidatoRepository;
 import com.includify.domain.candidato.dto.RegistrarCandidatoDTO;
 import com.includify.domain.candidato.respuestasCandidatos.RespuestasCandidato;
 import com.includify.domain.candidato.respuestasCandidatos.RespuestasUsuarioRepository;
+import com.includify.domain.empleo.categoria.Categoria;
+import com.includify.domain.empleo.categoria.CategoriaRepository;
 import com.includify.domain.empresa.Empresa;
 import com.includify.domain.empresa.EmpresaRepository;
 import com.includify.domain.empresa.dto.RegistrarEmpresaDTO;
@@ -42,6 +44,9 @@ public class AuthenticacionService {
     private EmpresaRepository empresaRepository;
 
     @Autowired
+    private CategoriaRepository categoriaRepository;
+
+    @Autowired
     private RespuestasUsuarioRepository respuestasUsuarioRepository;
 
     @Autowired
@@ -52,12 +57,11 @@ public class AuthenticacionService {
 
     public RespuestaJWTDTO login(LoginDTO login) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, JOSEException {
         Optional<Usuario> user = usuarioRepository.findByCorreo(login.correo());
-        System.out.println();
-
         if (user.isEmpty()) {
             throw new ValidacionException("Usuario no encontrado");
         }
 
+        // Verificar si la contraseña ingresada coincide con la contrase de la base de datos
         if (verificarContrasena(login.contrasena(), user.get().getContrasena())){
             RespuestaJWTDTO respuestaJWTDTO = new RespuestaJWTDTO(tokenService.generarToken(user.get().getId()));
             return respuestaJWTDTO;
@@ -68,11 +72,11 @@ public class AuthenticacionService {
     @Transactional
     public Candidato registerCandidato (RegistrarCandidatoDTO candidatoDTO) {
         Optional<Usuario> verificar = usuarioRepository.findByCorreo(candidatoDTO.usuario().correo());
-
         if (verificar.isPresent()){
             throw new ValidacionException("El correo ya existe prueba con otro");
         }
 
+        // Guardar usuario
         Usuario usuario = Usuario.builder()
                 .correo(candidatoDTO.usuario().correo())
                 .contrasena(candidatoDTO.usuario().contrasena())
@@ -81,6 +85,7 @@ public class AuthenticacionService {
         usuario.setContrasena(encoder.encode(usuario.getContrasena()));
         usuarioRepository.save(usuario);
 
+        // Guardar candidato
         EnviarCandidatoDTO enviarCandidato = new EnviarCandidatoDTO(
                 candidatoDTO.respuestas(),candidatoDTO.categoria(),candidatoDTO.nombre(), candidatoDTO.apellidos(), candidatoDTO.telefono(),
                 candidatoDTO.usuario().correo());
@@ -95,6 +100,11 @@ public class AuthenticacionService {
                 .build();
         candidatoRepository.save(candidato);
 
+        // Guardar respuetas candidato
+        Optional<Categoria> optionalCategoria = categoriaRepository.findByCategoria(candidatoDTO.categoria());
+        if (optionalCategoria.isEmpty()){
+            throw new ValidacionException("La categoria no existe");
+        }
         RespuestasCandidato respuestasUsuario = RespuestasCandidato.builder()
                 .idCandidato(candidato)
                 .r1(candidatoDTO.respuestas().get(0))
@@ -107,6 +117,7 @@ public class AuthenticacionService {
                 .r8(candidatoDTO.respuestas().get(7))
                 .r9(candidatoDTO.respuestas().get(8))
                 .r10(candidatoDTO.respuestas().get(9))
+                .categoria(optionalCategoria.get())
                 .build();
         respuestasUsuarioRepository.save(respuestasUsuario);
 
@@ -118,6 +129,8 @@ public class AuthenticacionService {
         if (verificar.isPresent()){
             throw new ValidacionException("El correo ya existe prueba con otro");
         }
+
+        // Guardar usuario
         Usuario usuario = Usuario.builder()
                 .correo(empresaDTO.usuario().correo())
                 .contrasena(empresaDTO.usuario().contrasena())
@@ -126,6 +139,7 @@ public class AuthenticacionService {
         usuario.setContrasena(encoder.encode(usuario.getContrasena()));
         usuarioRepository.save(usuario);
 
+        // Guardar empresa
         Empresa empresa = Empresa.builder()
                 .nombre(empresaDTO.nombre())
                 .telefono(empresaDTO.telefono())

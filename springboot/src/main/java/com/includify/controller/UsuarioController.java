@@ -34,7 +34,7 @@ public class UsuarioController {
     public ResponseEntity<MensajeDTO> registrarCandidatos (@RequestBody @Valid RegistrarCandidatoDTO registro, UriComponentsBuilder builder) {
         Candidato candidato = service.registerCandidato(registro);
         URI uri = builder.path("/candidato/{id}").buildAndExpand(candidato.getId()).toUri();
-        return ResponseEntity.created(uri).body(new MensajeDTO("Se creo exitosamente el candidato"));
+        return ResponseEntity.created(uri).build();
     }
 
     @PostMapping("/registrar/empresa")
@@ -42,7 +42,7 @@ public class UsuarioController {
     public ResponseEntity<MensajeDTO> registrarEmpresa (@RequestBody @Valid RegistrarEmpresaDTO registro, UriComponentsBuilder builder) {
         Empresa empresa = service.registerEmpresa(registro);
         URI uri = builder.path("/empresa/{id}").buildAndExpand(empresa.getId()).toUri();
-        return ResponseEntity.created(uri).body(new MensajeDTO("Se creo exitosamente la empresa"));
+        return ResponseEntity.created(uri).build();
     }
 
     @PostMapping("/login")

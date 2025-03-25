@@ -8,7 +8,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
 
 @Component
 public class ConsultaApi {
@@ -30,7 +29,7 @@ public class ConsultaApi {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(requestUri)
-                .header("Content-Type", "application/json")
+//                .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
         try {
@@ -39,20 +38,18 @@ public class ConsultaApi {
             return new Gson()
                     .fromJson(response.body(), responseClass);
         } catch (Exception e) {
-            throw new RuntimeException("Error al consumir la API", e);
+            throw new RuntimeException(e.getMessage() + " Python");
         }
     }
 
     private <T extends JsonValidacion> T consumirApiGet(Class<T> responseClass, String endpoint){
         URI requestUri = URL_API.resolve(endpoint);
-
-        HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(requestUri)
+                .GET()
                 .build();
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println(response.statusCode());
             if (response.statusCode() != 200) {
                 throw new RuntimeException("Error al consumir la API. Código de estado: " + response.statusCode());
             }
@@ -60,7 +57,7 @@ public class ConsultaApi {
             return new Gson()
                     .fromJson(response.body(), responseClass);
         } catch (Exception e) {
-            throw new RuntimeException("Error al consumir la API: " + e.getMessage(), e);
+            throw new RuntimeException(e.getMessage()+ " Python");
         }
     }
 
@@ -73,11 +70,11 @@ public class ConsultaApi {
 
     public CvDTO cv(EnviarCandidatoDTO enviarCandidato){
         String jsonBody = gson.toJson(enviarCandidato);
-        System.out.println(jsonBody);
         return consumirApiPost(jsonBody, CvDTO.class, "generatePdf");
     }
 
-    public MatchDTO match(){
-        return consumirApiGet(MatchDTO.class, "match");
+    public MatchDTO match(int idUsuario){
+        String uri = "match?pk_usuario=" + idUsuario;
+        return consumirApiGet(MatchDTO.class, uri);
     }
 }

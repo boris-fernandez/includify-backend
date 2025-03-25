@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/candidato")
@@ -24,8 +25,8 @@ public class CandidatoController {
 
     @PutMapping("update/pdf_url")
     @Transactional
-    public ResponseEntity<MensajeExito> actualizarCv (@RequestBody @Valid ActualizarCvDTO dto){
-        candidatoService.ActualizarCv(dto);
+    public ResponseEntity<MensajeExito> actualizarCv (@RequestParam("file") @Valid MultipartFile file){
+        candidatoService.ActualizarCv(file);
         return ResponseEntity.noContent().build();
     }
 }

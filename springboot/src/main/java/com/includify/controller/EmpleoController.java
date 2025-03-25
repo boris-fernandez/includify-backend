@@ -7,7 +7,12 @@ import com.includify.domain.empleo.dto.ObtenerEmpleosDTO;
 import com.includify.domain.usuario.dto.MensajeDTO;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -23,11 +28,12 @@ public class EmpleoController {
     private EmpleoService empleoService;
 
     @GetMapping
-    public ResponseEntity<?> obtenerEmpleos(){
-        List<ObtenerEmpleosDTO> empleosDTOS = empleoService.obtenerEmpleos();
+    public ResponseEntity<Page<ObtenerEmpleosDTO>> obtenerEmpleos(@PageableDefault(size = 1) Pageable pageable){
+        Page<ObtenerEmpleosDTO> empleosDTOS = empleoService.obtenerEmpleos(pageable);
         return ResponseEntity.ok(empleosDTOS);
     }
 
+    //Falta este
     @PostMapping("/create-video")
     @Transactional
     public ResponseEntity<MensajeDTO> createVideo(@RequestBody @Valid CreateVideoDTO videoDTO, UriComponentsBuilder builder){
@@ -37,7 +43,8 @@ public class EmpleoController {
     }
 
     @PutMapping("update-status/{id}")
-    public ResponseEntity<?> actualizarStatus(@PathVariable Long id){
+    @Transactional
+    public ResponseEntity<?> actualizarStatus(@PathVariable @NonNull Long id){
         empleoService.updateStatus(id);
         return ResponseEntity.noContent().build();
     }

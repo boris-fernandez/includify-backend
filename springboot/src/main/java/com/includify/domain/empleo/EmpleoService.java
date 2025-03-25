@@ -11,6 +11,9 @@ import com.includify.domain.empresa.EmpresaRepository;
 import com.includify.domain.usuario.Usuario;
 import com.includify.infra.apis.ConsultaApi;
 import com.includify.infra.apis.dto.VideoDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class EmpleoService {
@@ -37,6 +41,8 @@ public class EmpleoService {
     @Autowired
     private ConsultaApi consultaApi;
 
+    private ConcurrentHashMap<Long, List<ObtenerEmpleosDTO>> cacheEmpleos = new ConcurrentHashMap<>();
+
     public Empleo createVideo(CreateVideoDTO createVideoDTO) {
         Usuario usuarioAutenticado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -50,12 +56,12 @@ public class EmpleoService {
             categoriaRepository.save(newCategoria);
         }
 
-        Empresa empresa = empresaRepository.findUsuarioById(usuarioAutenticado.getId());
+        Empresa empresa = empresaRepository.findByUsuario_Id(usuarioAutenticado.getId());
 
         Empleo empleo = Empleo.builder()
                 .textoOriginal(createVideoDTO.textoOriginal())
                 .video(videoDTO.video())
-                .videoSenas(videoDTO.videoSeñas())
+                .videoSenas(videoDTO.videoSenas())
                 .empresa(empresa)
                 .categoria(videoDTO.categoria())
                 .build();
@@ -72,29 +78,34 @@ public class EmpleoService {
         }
         Empleo empleo = empleoOptional.get();
         empleo.updateStatus();
+        empleoRepository.save(empleo);
     }
 
-    public List<ObtenerEmpleosDTO> obtenerEmpleos() {
-        List<ObtenerEmpleosDTO> listEmpleos = new ArrayList<>();
+    public Page<ObtenerEmpleosDTO> obtenerEmpleos(Pageable pageable) {
+        Usuario usuarioAutenticado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        List<Integer> empleosDTOS = consultaApi.match().list();
+        List<ObtenerEmpleosDTO> listEmpleos = cacheEmpleos.get(usuarioAutenticado.getId());
 
-        for (Integer idEmpleos : empleosDTOS){
-            Optional<Empleo> empleoOptional = empleoRepository.findById((long) idEmpleos);
-            if (empleoOptional.isEmpty()){
-                throw new ValidacionException("No existe el empleo");
+        if (listEmpleos == null) {
+            List<Integer> empleosDTOS = consultaApi.match(usuarioAutenticado.getId().intValue()).recomendacion();
+            listEmpleos = new ArrayList<>();
+
+            for (Integer empleoId : empleosDTOS) {
+                Optional<Empleo> empleoOptional = empleoRepository.buscarEmpleos(empleoId.longValue());
+
+                List<ObtenerEmpleosDTO> finalListEmpleos = listEmpleos;
+                empleoOptional.ifPresent(empleo -> finalListEmpleos.add(new ObtenerEmpleosDTO(empleo)));
             }
 
-            Optional<Empresa> empresaOptional = empleoRepository.findEmpresaById((long) idEmpleos);
-
-            if (empleoOptional.isEmpty()){
-                throw new ValidacionException("No existe la empresa");
-            }
-
-            ObtenerEmpleosDTO empleosDTO = new ObtenerEmpleosDTO(empleoOptional.get(), empresaOptional.get().getNombre());
-
-            listEmpleos.add(empleosDTO);
+            cacheEmpleos.put(usuarioAutenticado.getId(), listEmpleos);
         }
-        return listEmpleos;
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), listEmpleos.size());
+
+        List<ObtenerEmpleosDTO> paginatedList = listEmpleos.subList(start, end);
+
+        return new PageImpl<>(paginatedList, pageable, listEmpleos.size());
     }
+
 }

@@ -6,8 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public record ActualizarCvDTO(
         @NotBlank
-        MultipartFile  file,
-        @NotBlank
-        Long id
+        MultipartFile  file
 ) {
 }

@@ -6,7 +6,7 @@ import java.util.List;
 
 public record VideoDTO(
         String video,
-        String videoSeñas,
+        String videoSenas,
         List<Integer> calificaciones,
         Categoria categoria
 )implements JsonValidacion {
