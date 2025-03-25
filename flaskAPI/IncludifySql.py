@@ -7,11 +7,11 @@ dbconfig = {
     "host": os.getenv('MYSQL_HOST'),
     "password": os.getenv('MYSQL_PASSWORD'),
     "database": os.getenv('MYSQL_DATABASE'),
-    "port": os.getenv('MYSQL_PORT'),
+    "port": int(os.getenv('MYSQL_PORT')),
 }
 
 pool = pooling.MySQLConnectionPool(pool_name="mypool",
-                                   pool_size=1,
+                                   pool_size=5,
                                    **dbconfig)
 
 def get_connection():
@@ -29,3 +29,10 @@ def exSQL(consulta):
     miCursor.close()
     conexion.close()  # Devuelve la conexión al pool
     return response
+
+# Ejemplo de uso
+if __name__ == "__main__":
+    query = "SELECT * FROM candidatos LIMIT 10;"
+    resultados = exSQL(query)
+    for row in resultados:
+        print(row)
