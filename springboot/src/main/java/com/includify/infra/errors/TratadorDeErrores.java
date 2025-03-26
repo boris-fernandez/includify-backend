@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class TratadorDeErrores {
 
-    @ExceptionHandler(ValidacionException.class)
-    public ResponseEntity<?> tratarErrorDeValidacion(ValidacionException e){
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ValidacionExecptionDTO(e.getMessage()));
-    }
+//    @ExceptionHandler(ValidacionException.class)
+//    public ResponseEntity<?> tratarErrorDeValidacion(ValidacionException e){
+//        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ValidacionExecptionDTO(e.getMessage()));
+//    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public final ResponseEntity<?> tratarError400(MethodArgumentNotValidException e){
@@ -29,8 +29,8 @@ public class TratadorDeErrores {
 
 //    MaxUploadSizeExceededException
 
-    @ExceptionHandler(RuntimeException.class)
-    public final ResponseEntity<?> tratarErrorRuntimeException(RuntimeException e){
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ValidacionExecptionDTO(e.getMessage()));
-    }
+//    @ExceptionHandler(RuntimeException.class)
+//    public final ResponseEntity<?> tratarErrorRuntimeException(RuntimeException e){
+//        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ValidacionExecptionDTO(e.getMessage()));
+//    }
 }

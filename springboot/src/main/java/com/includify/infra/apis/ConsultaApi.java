@@ -29,12 +29,11 @@ public class ConsultaApi {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(requestUri)
-//                .header("Content-Type", "application/json")
+                .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println(response.statusCode());
             return new Gson()
                     .fromJson(response.body(), responseClass);
         } catch (Exception e) {

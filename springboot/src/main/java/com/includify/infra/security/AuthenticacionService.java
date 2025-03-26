@@ -69,7 +69,6 @@ public class AuthenticacionService {
         throw new ValidacionException("Authenticacion fallida");
     }
 
-    @Transactional
     public Candidato registerCandidato (RegistrarCandidatoDTO candidatoDTO) {
         Optional<Usuario> verificar = usuarioRepository.findByCorreo(candidatoDTO.usuario().correo());
         if (verificar.isPresent()){
@@ -83,14 +82,13 @@ public class AuthenticacionService {
                 .build();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         usuario.setContrasena(encoder.encode(usuario.getContrasena()));
-        usuarioRepository.save(usuario);
+
 
         // Guardar candidato
         EnviarCandidatoDTO enviarCandidato = new EnviarCandidatoDTO(
                 candidatoDTO.respuestas(),candidatoDTO.categoria(),candidatoDTO.nombre(), candidatoDTO.apellidos(), candidatoDTO.telefono(),
                 candidatoDTO.usuario().correo());
         CvDTO cv = consultaApi.cv(enviarCandidato);
-        System.out.println(cv.pdf_url());
         Candidato candidato = Candidato.builder()
                 .username(candidatoDTO.nombre())
                 .apellidos(candidatoDTO.apellidos())
@@ -98,7 +96,7 @@ public class AuthenticacionService {
                 .cv(cv.pdf_url())
                 .usuario(usuario)
                 .build();
-        candidatoRepository.save(candidato);
+
 
         // Guardar respuetas candidato
         Optional<Categoria> optionalCategoria = categoriaRepository.findByCategoria(candidatoDTO.categoria());
@@ -119,8 +117,11 @@ public class AuthenticacionService {
                 .r10(candidatoDTO.respuestas().get(9))
                 .categoria(optionalCategoria.get())
                 .build();
-        respuestasUsuarioRepository.save(respuestasUsuario);
 
+        // Guardara todo en la base de datos
+        respuestasUsuarioRepository.save(respuestasUsuario);
+        usuarioRepository.save(usuario);
+        candidatoRepository.save(candidato);
         return candidato;
     }
 
