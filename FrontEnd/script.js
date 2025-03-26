@@ -1,3 +1,7 @@
+var URL = 'http://localhost:8080/'
+let jwt = null;
+
+const dataForm = document.querySelector('.loginForm');
 const formulario = document.querySelector('.formulario');
 
 formulario.addEventListener('submit', event => {
@@ -16,8 +20,7 @@ formulario.addEventListener('submit', event => {
         categoria: "Inteligencia artificial" 
     };
 
-    console.log(data)
-    fetch("http://localhost:8080/auth/registrar/candidato", {
+    fetch(URL + "auth/registrar/candidato", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -37,3 +40,30 @@ formulario.addEventListener('submit', event => {
     .catch(error => console.log('Error en la solicitud:', error));
     
 });
+
+dataForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const datosFormulario = new FormData(dataForm);
+    const data = {
+        correo: datosFormulario.get('correo'),
+        contrasena: datosFormulario.get('contrasena')
+    };
+
+    try {
+        const response = await fetch(URL + "auth/login", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        const responseData = await response.json();
+        jwt = responseData.jwt;
+
+    } catch (error) {
+        console.error("Error en la solicitud:", error);
+    }
+    
+});
+
