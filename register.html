@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IncluDify</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" href="https://i.ibb.co/F4yWsPXh/logo-Oscuro.png" type="IconoPrincipal">
+</head>
+
+<body>
+    <div class="cuadrologin">
+
+        <div class="cabeceralogin">
+            <div class="cont"><a href="index.html"><img class="logo" src="https://i.ibb.co/pcxSH4Z/logo.png"  alt="Logo de IncluDify"></a></div>
+        </div>
+
+        <div class="cuerpologin">
+
+            <img class="imgRegister" src="https://i.ibb.co/bRJwpQN7/Group-4.png" alt="celular con videos">
+
+            <div class="contenedorRegister">
+                <h1>Crear cuenta</h1>
+                <p><strong>Estas un paso más cerca</strong> de conseguir ese empleo inclusivo de la manera más fácil y divertida</p>
+
+                <form action="http://localhost:8080/api/registro" method="POST">
+                    <div class="input-groupRegister">
+                        <input type="text" name="nombre" placeholder="Nombre" required>
+                        <input type="text" name="apellido" placeholder="Apellido" required>
+                    </div>
+                    <input type="email" name="email" placeholder="E-mail" required>
+                    <input type="password" name="password" placeholder="Password" required>
+                    <div class="input-groupRegister">
+                        <input type="text" name="pais" placeholder="País" required>
+                        <input type="tel" name="celular" placeholder="Celular" required>
+                    </div>
+                    <button type="submit" class="btnRegister btn-primaryRegister">Empezar</button>
+                </form>
+                <a href="login.html"><button type="button" class="btnRegister btn-secondaryRegister">Ya tengo una cuenta</button></a>
+            </div>
+            
+        </div>
+
+    </div>
+</body>
+</html>

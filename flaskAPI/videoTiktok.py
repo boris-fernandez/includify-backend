@@ -1,6 +1,9 @@
 from flask import Flask, jsonify, request
 import shutil
+<<<<<<< HEAD
 from moviepy.video.fx import speedx, resize, rotate  # o los efectos que necesites
+=======
+>>>>>>> 7c08705eee7324c9c135973fe5fb4eac0ad93982
 import re
 import os
 from groq import Groq
@@ -34,10 +37,10 @@ lineasGuion = []
 palabrasGuion = []
 
 # Carpetas temporales 
-folderAudios = r"C:\Users\josue\OneDrive - Universidad Tecnologica del Peru\Desktop\INCLUDIFY2.0\flaskAPI\voz"
-folderVideos = r"C:\Users\josue\OneDrive - Universidad Tecnologica del Peru\Desktop\INCLUDIFY2.0\flaskAPI\media"
+folderAudios = "voz"
+folderVideos = "media"
 # Ruta de salida del video final
-finalVideo = r"C:\Users\josue\OneDrive - Universidad Tecnologica del Peru\Desktop\INCLUDIFY2.0\flaskAPI\video_final.mp4"
+finalVideo = "video_final.mp4"
 
 # Crear directorio si no existe
 if not os.path.exists(folderAudios):
