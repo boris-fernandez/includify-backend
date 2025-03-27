@@ -1,9 +1,6 @@
+import time
 from flask import Flask, jsonify, request
 import shutil
-# <<<<<<< HEAD
-from moviepy.video.fx import speedx, resize, rotate  # o los efectos que necesites
-# =======
-# >>>>>>> 7c08705eee7324c9c135973fe5fb4eac0ad93982
 import re
 import os
 from groq import Groq
@@ -57,7 +54,6 @@ voices = [
     "es-ES-AlvaroNeural",  # Español España, Masculino
     "es-ES-ElviraNeural",  # Español España, Femenino
     "es-CO-GonzaloNeural", # Español Colombia, Masculino
-    "es-CO-ElenaNeural",   # Español Colombia, Femenino
     "es-AR-ElenaNeural"    # Español Argentina, Femenino
 ]
 
@@ -103,6 +99,30 @@ def create_guion_groq(anuncio):
     guion = chat_completion.choices[0].message.content
     return guion
 
+def limpiar_palabras(lista):
+    return [re.sub(r'^\d+\.\s*', '', palabra) for palabra in lista]
+
+def traducir_lista(lista):
+    #crear guion y palabras con Groq
+    lista_traducida = []
+    for i in range(len(lista)):
+        chat_completion = client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "Eres un bot traductor de español a ingles y las palabras que te llegan en español debes devolverlas en ingles, si la palabra ya esta en ingles dejala tal cual, si tiene varias interpretaciones escoge una y no des explicaciones, eres un bot que funciona como un traductor de texto",
+                    },
+                    {
+                        "role": "user",
+                        "content": str(lista[i]),
+                    }
+                ],
+                model="llama-3.3-70b-versatile",
+            )
+        palabra = chat_completion.choices[0].message.content
+        lista_traducida.append(palabra)
+    return lista_traducida
+
 def videos_pixabay():
     # Descargar videos de Pixabay
     for i, query in enumerate(palabrasGuion[:10], start=1):  # Solo 10 videos
@@ -117,14 +137,33 @@ def videos_pixabay():
             
             if not videos:
                 print(f"No se encontraron videos para {query}, buscando video de tecnologia...")
-                video_url = f"https://pixabay.com/api/videos/?key={API_PIXABAY}&q=tecnologia&video_type=all"
+                video_url = f"https://pixabay.com/api/videos/?key={API_PIXABAY}&q=technology&video_type=all"
                 response = requests.get(video_url)
                 data = response.json()
                 videos = data.get("hits", [])
                 
             if videos:
-                video = random.choice(videos)
-                video_download_url = video['videos']['large']['url']
+                # Filtrar videos según la calidad disponible
+                videos_tiny = [video for video in videos if 'tiny' in video['videos']]
+                videos_small = [video for video in videos if 'small' in video['videos']]
+                videos_large = [video for video in videos if 'large' in video['videos']]
+                
+                if videos_tiny:  
+                    video = random.choice(videos_tiny)  # Selecciona un video aleatorio en calidad 'tiny'
+                    video_download_url = video['videos']['tiny']['url']
+                    print(f"📹 Se encontró un video en calidad 'tiny'. Descargando...")
+                elif videos_small:
+                    video = random.choice(videos_small)  # Si no hay tiny, busca en 'small'
+                    video_download_url = video['videos']['small']['url']
+                    print(f"📹 No se encontraron videos en 'tiny'. Usando calidad 'small'...")
+                elif videos_large:
+                    video = random.choice(videos_large)  # Si tampoco hay en 'small', usa 'large'
+                    video_download_url = video['videos']['large']['url']
+                    print(f"📹 No se encontraron videos en 'tiny' ni 'small'. Usando calidad 'large'...")
+                else:
+                    print(f"❌ No hay videos en calidad 'tiny', 'small' ni 'large'. Saltando...")
+                    video = random.choice(videos)
+                    video_download_url = video['videos']['large']['url']
                 
                 print(f"Descargando video {i}: {video_download_url}")
                 video_response = requests.get(video_download_url, stream=True)
@@ -134,6 +173,7 @@ def videos_pixabay():
                         for chunk in video_response.iter_content(chunk_size=1024):
                             file.write(chunk)
                     print(f"✅ Video guardado como {file_name}")
+
                 else:
                     print(f"❌ Error al descargar el video {i}")
             else:
@@ -164,6 +204,7 @@ def resize_videos():
             print(f"✅ Video procesado correctamente: {filename}")
 
     print("🎉 Todos los videos han sido corregidos y reescalados a 1080x1920.")
+
 
 def subtitle_videos():
     # Obtener los primeros 10 videos de la carpeta de origen
@@ -295,7 +336,11 @@ def limpiar_carpetas():
                     print(f"⚠️ No se pudo eliminar {archivo_path}: {e}")
 
 def generate_video(data):
+    global lineasGuion, palabrasGuion
+    lineasGuion = []
+    palabrasGuion = []
     #Obtener guion de 10 lineas con Qroq
+    limpiar_carpetas()
     print("Generando guion...")
     guion = create_guion_groq(data['anuncio'])
     guionCompleto = ""
@@ -312,8 +357,10 @@ def generate_video(data):
             elif contenido < 20 and contenido >= 10:
                 palabrasGuion.append(line)
                 contenido+=1
-    # print(lineasGuion)
-    # print(palabrasGuion)
+
+    print("lineasGuion: " +str(lineasGuion))
+    print("palabrasGuion: "+str(palabrasGuion))
+    palabrasGuion = traducir_lista(palabrasGuion)
     print(guionCompleto)
 
     # Crear audios del guion
@@ -339,6 +386,11 @@ def generate_video(data):
     #unir los 10 videos y guardar el video final
     print("Uniendo videos...")
     join_final_video()
+
+    limpiar_carpetas()
+
     print("Video final guardado correctamente.")
-    
+
     return jsonify({"message": guionCompleto})
+
+# generate_video({"anuncio": "se busca desarrollador backend empresa de tecnologia en crecimiento busca un desarrollador backend para unirse a su equipo el candidato ideal debe tener experiencia en desarrollo de apis optimizacion de bases de datos y trabajo en equipo requisitos experiencia en python nodejs o java conocimientos en bases de datos sql y nosql experiencia en el desarrollo y consumo de apis rest capacidad para trabajar en equipo y resolver problemas tecnicos beneficios trabajo remoto o presencial segun preferencia salario competitivo segun experiencia oportunidad de crecimiento en la empresa acceso a formaciones"})
