@@ -21,18 +21,12 @@ def create_video():
     data = request.get_json()
 
     categoriaPuesto = categoriasTrabajo.generate_puesto(data["anuncio"])
-    
-    videoTiktok.limpiar_carpetas()
 
-    respuesta = videoTiktok.generate_video(data)
 
     guionCompleto = respuesta.get_json()["message"]  # <--- ✅ Guion del video
 
     videoSeñas.generate_video_signs(guionCompleto)
 
-    videoTiktok.limpiar_carpetas()
-
-    urlVideoTiktok = publicVideo.upload_video("Tiktok")  # <--- ✅ Url del video de Tiktok
     urlSeñas = publicVideo.upload_video("Señas")  # <--- ✅ Url del video de Señas
     score = califications.generate_score(data)  # <--- ✅ Lista que guarda las calificaciones
 
@@ -40,7 +34,6 @@ def create_video():
 
     respuesta = jsonify({
         "guion_video": guionCompleto,
-        "video": urlVideoTiktok,
         "video_señas": urlSeñas,
         "calificaciones": score,
         "categoria": categoriaPuesto,

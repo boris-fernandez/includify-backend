@@ -1,9 +1,9 @@
 from flask import Flask, jsonify, request
 import shutil
-<<<<<<< HEAD
+# <<<<<<< HEAD
 from moviepy.video.fx import speedx, resize, rotate  # o los efectos que necesites
-=======
->>>>>>> 7c08705eee7324c9c135973fe5fb4eac0ad93982
+# =======
+# >>>>>>> 7c08705eee7324c9c135973fe5fb4eac0ad93982
 import re
 import os
 from groq import Groq
