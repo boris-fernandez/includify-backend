@@ -2,6 +2,7 @@ package com.includify.infra.apis;
 
 import com.includify.infra.apis.dto.*;
 import com.nimbusds.jose.shaded.gson.Gson;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -12,7 +13,8 @@ import java.net.http.HttpResponse;
 @Component
 public class ConsultaApi {
 
-    private static URI URL_API = URI.create("https://includify-backend.onrender.com/");
+    @Value("${api.url.base}")
+    private String urlApi;
 
     private Gson gson;
 
@@ -25,7 +27,7 @@ public class ConsultaApi {
 
 
     private <T extends JsonValidacion> T consumirApiPost(String jsonBody, Class<T> responseClass, String endpoint){
-        URI requestUri = URL_API.resolve(endpoint);
+        URI requestUri = URI.create(urlApi).resolve(endpoint);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(requestUri)
@@ -42,7 +44,7 @@ public class ConsultaApi {
     }
 
     private <T extends JsonValidacion> T consumirApiGet(Class<T> responseClass, String endpoint){
-        URI requestUri = URL_API.resolve(endpoint);
+        URI requestUri = URI.create(urlApi).resolve(endpoint);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(requestUri)
                 .GET()
