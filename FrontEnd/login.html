@@ -12,9 +12,12 @@
 
 <body>
     <div class="cuadrologin">
-
         <div class="cabeceralogin">
-            <div class="cont"><a href="index.html"><img class="logo" src="https://i.ibb.co/pcxSH4Z/logo.png"  alt="Logo de IncluDify"></a></div>
+            <div class="cont">
+                <a href="index.html">
+                    <img class="logo" src="https://i.ibb.co/pcxSH4Z/logo.png" alt="Logo de IncluDify">
+                </a>
+            </div>
         </div>
 
         <div class="cuerpologin">
@@ -23,17 +26,28 @@
                     <h1>Hola de nuevo!</h1>
                 </div>
                 <p>Ingresa a <strong>la plataforma más original</strong> para conectar personas y empleos inclusivos</p>
-                <form id="loginForm" method="POST">
-                    <input type="email" name="email" placeholder="E-mail" required>
-                    <input type="password" name="password" placeholder="Contraseña" required>
+                <form class="loginForm">
+                    <input type="email" name="correo" placeholder="E-mail" required>
+                    <input type="password" name="contrasena" placeholder="Contraseña" required>
                     <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
                 </form>                
-                <a href="register.html"><button class="btn btn-secondary">Crear Cuenta</button></a>
+                <button id="btnCrearCuenta" class="btn btn-secondary">Crear Cuenta</button>
             </div>
 
             <img class="imgLogin" src="https://i.ibb.co/Kc4rbs8B/Group-3.png" alt="celular con videos">
         </div>
-
     </div>
+    
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>Selecciona el tipo de cuenta</h2>
+            <button class="btn btn-primary" onclick="window.location.href='./registerCandidato.html'">Cuenta Usuario</button>
+            <button class="btn btn-secondary" onclick="window.location.href='./registerEmpresa.html'">Cuenta Empresa</button>
+            <br>
+            <button id="btnCerrar" class="btn btn-close">Cancelar</button>
+        </div>
+    </div>
+    
 </body>
+<script src="./Login.js"></script>
 </html>

@@ -24,6 +24,8 @@ public class Candidato {
 
     private String telefono;
 
+    private String pais;
+
     private String cv;
 
     @OneToOne(fetch = FetchType.EAGER)
