@@ -1,0 +1,213 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:200&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Epilogue:wght@300;600;900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Epilogue', sans-serif;
+    background-color: #fff;
+    color: #1E1E1E;
+}
+
+.cuadrologin {
+    min-height: 100vh; /*Altura mínima de 100vh
+    height: auto; /* Permite que crezca si el contenido lo requiere */
+    display: flex;
+    flex-direction: column; /* Asegura que los elementos dentro se acomoden en columna */
+    align-items: center; /* Opcional: centra el contenido horizontalmente */
+    justify-content: flex-start; /* Alinea los elementos al inicio */
+    overflow: visible; /* Asegura que no recorte contenido */
+    /* background-color: red; */
+}
+
+.imgLogin {
+    max-height: 70vh;
+    width: auto;
+}
+
+.imgRegister {
+    max-height: 70vh;
+    width: auto;
+}
+
+.cabeceralogin{
+    height: 10vh;
+    /* background-color: #a50019; */
+    background-color: #2d2d2d;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    width: 100%;
+
+    .cont{
+        height: 5vh;
+        margin-left: 40px;
+
+        .logo{
+            height: 100%;;
+        }
+    }
+}
+
+.logo{
+    height: 45%;
+}
+
+.cuerpologin {
+    /* height: 80vh; */
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    flex-grow: 1; /* Permite que este contenedor crezca dentro de cuadro1 */
+    width: 100%;
+    /* background-color: blue; */
+}
+
+.contenedorRegister {
+    background: white;
+    padding: 40px;
+    margin-right: 110px;
+    text-align: center;
+    /*Ojo aqui*/
+    margin-left: 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.459);
+    /* Títulos y texto */
+    h1 {
+        font-size: 35px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    p {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    /* Inputs */
+    input {
+        width: 100%;
+        padding: 10px;
+        padding-left: 30px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .input-groupRegister{
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    /* Botones */
+    .btnRegister {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 20px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .btn-primaryRegister {
+        background-color: #3e32aa;
+        color: white;
+        font-weight: bold;
+    }
+
+    .btn-secondaryRegister {
+        background-color: #713A64;
+        color: white;
+        font-weight: bold;
+        width: 60%;
+    }
+}
+
+@media (max-width: 900px), (min-height: 968px) {
+    .barra{
+        background-color: #2d2d2d;
+        display: flex;
+        flex-direction: row;
+        width: 100vw;
+        height: 10vh;
+        border-radius: 0px;
+        justify-content: space-around;
+        -webkit-box-shadow: 0px 8px 13px -2px rgba(66, 68, 90, 0.58);
+        -moz-box-shadow: 0px 8px 13px -2px rgba(66, 68, 90, 0.58);
+        box-shadow: 0px 8px 13px -2px rgba(66, 68, 90, 0.58);
+        position: fixed;
+    }
+    
+    .logo{
+        width: auto;
+        height: 40%;
+        margin-left: 0px;
+        /* background-color: red; */
+    }
+    
+    .contenedor{
+        width: auto;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+
+        ul{
+            display: none;
+        }
+    }
+
+    .botonLogin{
+        margin-left: 10px;
+        margin-right: 10px;
+        padding: 12px 15px;
+    }
+
+    h2{
+        font-size: 1.8rem;
+    }
+
+    h3, h5{
+        font-size: 1.6rem;
+    }
+
+    .info p{
+        font-size: 2rem;
+    }
+
+    .info h2 {
+        font-size: 1.6rem;
+    }
+
+    .cuadro5 .titulo p{
+        font-size: 2.5rem;
+    }
+
+    .cuadro5 .titulo p strong{
+        font-size: 3rem;
+    }
+
+    .contenedorLogin, .contenedorRegister{
+        margin-right: 0px;
+        margin-left: 0px;
+    }
+
+    .imgLogin, .imgRegister {
+        display: none;
+    }   
+}

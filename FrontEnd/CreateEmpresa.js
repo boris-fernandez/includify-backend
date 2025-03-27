@@ -11,15 +11,14 @@ const formulario = document.querySelector('.formulario');
              correo: datosFormulario.get('email'),
              contrasena: datosFormulario.get('password')
          },
-         nombre: datosFormulario.get('nombre'),
-         apellidos: datosFormulario.get('apellidos'),
+         nombre: datosFormulario.get('empresa'),
          telefono: datosFormulario.get('telefono'),
-         respuestas: [1, 0, 3, 1, 3, 0, 2, 1, 1, 3],
-         categoria: "Inteligencia artificial" 
+         pais: datosFormulario.get('pais'),
+         telefono: datosFormulario.get('telefono')
      };
  
      console.log(data)
-     fetch(URL + "auth/registrar/candidato", {
+     fetch(URL + "auth/registrar/empresa", {
          method: 'POST',
          headers: {
              'Content-Type': 'application/json'

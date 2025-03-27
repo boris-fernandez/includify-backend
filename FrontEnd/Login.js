@@ -21,8 +21,12 @@ dataForm.addEventListener('submit', async (event) => {
             body: JSON.stringify(data)
         });
         const responseData = await response.json();
-        jwt = responseData.jwt;
-        console.log(jwt)
+        if (response.ok) {
+            localStorage.setItem('jwt', responseData.jwt);
+            console.log("JWT almacenado:", responseData.jwt);
+        } else {
+            console.error("Error en la autenticación:", responseData);
+        }
     } catch (error) {
         console.error("Error en la solicitud:", error);
     }
@@ -30,3 +34,10 @@ dataForm.addEventListener('submit', async (event) => {
 });
 
 
+document.getElementById("btnCrearCuenta").addEventListener("click", function() {
+    document.getElementById("modal").style.display = "flex";
+});
+
+document.getElementById("btnCerrar").addEventListener("click", function() {
+    document.getElementById("modal").style.display = "none";
+});

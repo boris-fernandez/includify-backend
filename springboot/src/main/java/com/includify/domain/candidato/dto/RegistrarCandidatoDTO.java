@@ -11,19 +11,19 @@ import java.util.List;
 public record RegistrarCandidatoDTO(
         @Valid
         CreateUserDTO usuario,
-        @NonNull
         @NotBlank
         String nombre,
-        @NonNull
+        @NotBlank
+        String pais,
         @NotBlank
         String apellidos,
-        @NonNull
+        @NotBlank
         String telefono,
-        @NotNull(message = "Las calificaciones no pueden ser nulas")
+        @NotBlank(message = "Las calificaciones no pueden ser nulas")
         @Size(min = 10, max = 10, message = "Deben haber excatamenta 10 respuetas")
         List< @Min(value = 0, message = "Cada respuesta no debe ser menor a 0")
         @Max(value = 3, message = "Cada respuesta no puede ser mayor a 3") Integer> respuestas,
-        @NonNull
+        @NotBlank
         String categoria
 ) {
 }

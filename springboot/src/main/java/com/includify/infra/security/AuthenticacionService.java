@@ -91,12 +91,12 @@ public class AuthenticacionService {
         CvDTO cv = consultaApi.cv(enviarCandidato);
         Candidato candidato = Candidato.builder()
                 .username(candidatoDTO.nombre())
+                .pais(candidatoDTO.pais())
                 .apellidos(candidatoDTO.apellidos())
                 .telefono(candidatoDTO.telefono())
                 .cv(cv.pdf_url())
                 .usuario(usuario)
                 .build();
-
 
         // Guardar respuetas candidato
         Optional<Categoria> optionalCategoria = categoriaRepository.findByCategoria(candidatoDTO.categoria());
@@ -138,7 +138,6 @@ public class AuthenticacionService {
                 .build();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         usuario.setContrasena(encoder.encode(usuario.getContrasena()));
-        usuarioRepository.save(usuario);
 
         // Guardar empresa
         Empresa empresa = Empresa.builder()
@@ -147,6 +146,8 @@ public class AuthenticacionService {
                 .pais(empresaDTO.pais())
                 .usuario(usuario)
                 .build();
+
+        usuarioRepository.save(usuario);
         empresaRepository.save(empresa);
         return empresa;
     }
