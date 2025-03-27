@@ -41,8 +41,16 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
+
+    env:
+      DATA_BASE_URL: ${{ secrets.DATA_BASE_URL }}
+      DATA_BASE_USERNAME: ${{ secrets.DATA_BASE_USERNAME }}
+      DATA_BASE_PASSWORD: ${{ secrets.DATA_BASE_PASSWORD }}
+      EXPIRATION_TIME: ${{ secrets.EXPIRATION_TIME }}
+      CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
+      API_BASE_URL: ${{ secrets.API_BASE_URL }}t
   
     steps:
       - name: Download artifact from build job
