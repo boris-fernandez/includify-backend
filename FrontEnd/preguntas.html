@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IncluDify</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" href="https://i.ibb.co/F4yWsPXh/logo-Oscuro.png" type="IconoPrincipal">
+  <style>
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+      width: 120px;
+      text-align: center;
+      background: white;
+    }
+    
+    .item:hover {
+      transform: scale(1.1);
+      border-color: #007bff;
+    }
+    
+    .item.selected {
+      border-color: #28a745;
+      background-color: #e6ffe6;
+    }
+    
+    .item img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    
+    .item span {
+      margin-top: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="cuadrologin">
+    <div class="cabeceralogin">
+      <div class="cont">
+        <a href="index.html"><img class="logo" src="https://i.ibb.co/pcxSH4Z/logo.png" alt="Logo de IncluDify"></a>
+      </div>
+    </div>
+    <div class="containerPreguntas">
+      <div class="header" id="pregunta-header">PREGUNTA 1</div>
+      <div class="gallery" id="opciones-container"></div>
+    </div>
+    <div class="buttonsPreguntas">
+      <button class="btn btn-prev" onclick="cambiarPregunta(-1)" disabled>ANTERIOR</button>
+      <button class="btn btn-next" onclick="cambiarPregunta(1)">SIGUIENTE</button>
+    </div>
+  </div>
+
+  <script>
+    const preguntas = [
+      { 
+        pregunta: "Prefiero trabajar", 
+        opciones: ["Remoto", "Presencial"],
+        imagenes: [
+          "https://cdn.pixabay.com/photo/2022/08/21/15/40/woman-7401593_1280.jpg",
+          "https://cdn.pixabay.com/photo/2017/05/31/11/17/office-2360063_1280.jpg"
+        ]
+      },
+      { 
+        pregunta: "Mi nivel de experiencia es", 
+        opciones: ["Sin experiencia", "Poca experiencia", "1-2 años", "Más de 2 años"],
+        imagenes: [
+          "https://via.placeholder.com/80?text=Sin",
+          "https://via.placeholder.com/80?text=Poca",
+          "https://via.placeholder.com/80?text=1-2",
+          "https://via.placeholder.com/80?text=2+"
+        ]
+      },
+      { 
+        pregunta: "Busco una jornada laboral de", 
+        opciones: ["Tiempo completo", "Medio tiempo", "Flexible", "Freelance"],
+        imagenes: [
+          "https://via.placeholder.com/80?text=Completo",
+          "https://via.placeholder.com/80?text=Medio",
+          "https://via.placeholder.com/80?text=Flexible",
+          "https://via.placeholder.com/80?text=Freelance"
+        ]
+      },
+      { 
+        pregunta: "Como persona con discapacidad, la accesibilidad en el trabajo", 
+        opciones: ["No es clave", "Opcional", "Necesaria", "Esencial"],
+        imagenes: [
+          "https://via.placeholder.com/80?text=No+clave",
+          "https://via.placeholder.com/80?text=Opcional",
+          "https://via.placeholder.com/80?text=Necesaria",
+          "https://via.placeholder.com/80?text=Esencial"
+        ]
+      },
+      { 
+        pregunta: "Mi nivel de formación es", 
+        opciones: ["Sin formación", "Técnico", "Universitario", "Posgrado"],
+        imagenes: [
+          "https://via.placeholder.com/80?text=Sin",
+          "https://via.placeholder.com/80?text=Técnico",
+          "https://via.placeholder.com/80?text=Univ",
+          "https://via.placeholder.com/80?text=Posgrado"
+        ]
+      },
+      { 
+        pregunta: "Para ejercer en un entorno estructurado y de trabajo en equipo", 
+        opciones: ["Estructurado", "Estándar", "Flexible", "Dinámico"],
+        imagenes: [
+          "https://via.placeholder.com/80?text=Estruc",
+          "https://via.placeholder.com/80?text=Estándar",
+          "https://via.placeholder.com/80?text=Flexible",
+          "https://via.placeholder.com/80?text=Dinámico"
+        ]
+      },
+      { 
+        pregunta: "Sobre las herramientas de accesibilidad", 
+        opciones: ["No necesarias", "Uso propio", "Apoyo parcial", "Soporte total"],
+        imagenes: [
+          "https://via.placeholder.com/80?text=No",
+          "https://via.placeholder.com/80?text=Uso",
+          "https://via.placeholder.com/80?text=Apoyo",
+          "https://via.placeholder.com/80?text=Soporte"
+        ]
+      },
+      { 
+        pregunta: "Sobre las adaptaciones en el puesto de trabajo", 
+        opciones: ["No necesarias", "Opcionales", "Flexibles", "Imprescindibles"],
+        imagenes: [
+          "https://via.placeholder.com/80?text=No",
+          "https://via.placeholder.com/80?text=Opcional",
+          "https://via.placeholder.com/80?text=Flexible",
+          "https://via.placeholder.com/80?text=Impresc"
+        ]
+      },
+      { 
+        pregunta: "Con respecto a los beneficios en el puesto de trabajo", 
+        opciones: ["No prioritarios", "Temporales", "Estándar", "Inclusivos"],
+        imagenes: [
+          "https://via.placeholder.com/80?text=No",
+          "https://via.placeholder.com/80?text=Temp",
+          "https://via.placeholder.com/80?text=Estándar",
+          "https://via.placeholder.com/80?text=Inclus"
+        ]
+      },
+      { 
+        pregunta: "Sobre las tecnologías o habilidades específicas que tengo", 
+        opciones: ["Ninguna", "Básicas", "Intermedias", "Avanzadas"],
+        imagenes: [
+          "https://via.placeholder.com/80?text=Ninguna",
+          "https://via.placeholder.com/80?text=Básicas",
+          "https://via.placeholder.com/80?text=Intermedias",
+          "https://via.placeholder.com/80?text=Avanzadas"
+        ]
+      }
+    ];
+
+    let respuestas = Array(preguntas.length).fill(null);
+    let preguntaActual = 0;
+    
+    function mostrarPregunta() {
+      document.getElementById("pregunta-header").textContent = preguntas[preguntaActual].pregunta;
+      const opcionesContainer = document.getElementById("opciones-container");
+      opcionesContainer.innerHTML = "";
+
+      preguntas[preguntaActual].opciones.forEach((opcion, index) => {
+        const div = document.createElement("div");
+        div.classList.add("item");
+        div.onclick = () => seleccionarOpcion(index);
+        if (respuestas[preguntaActual] === index) div.classList.add("selected");
+
+        // Crear imagen y texto para la opción
+        const img = document.createElement("img");
+        img.src = preguntas[preguntaActual].imagenes[index];
+        img.alt = opcion;
+        
+        const span = document.createElement("span");
+        span.textContent = opcion;
+
+        div.appendChild(img);
+        div.appendChild(span);
+        opcionesContainer.appendChild(div);
+      });
+      document.querySelector(".btn-prev").disabled = preguntaActual === 0;
+      document.querySelector(".btn-next").textContent = preguntaActual === preguntas.length - 1 ? "ENVIAR" : "SIGUIENTE";
+    }
+
+    function seleccionarOpcion(index) {
+      respuestas[preguntaActual] = index;
+      document.querySelectorAll(".item").forEach(item => item.classList.remove("selected"));
+      document.querySelectorAll(".item")[index].classList.add("selected");
+      console.log(`Pregunta: ${preguntas[preguntaActual].pregunta}`);
+      console.log(`Opción seleccionada: ${preguntas[preguntaActual].opciones[index]}`);
+    }
+
+    function cambiarPregunta(direccion) {
+      if (direccion === 1 && preguntaActual === preguntas.length - 1) {
+        enviarRespuestas();
+        return;
+      }
+      preguntaActual += direccion;
+      mostrarPregunta();
+    }
+
+    function enviarRespuestas() {
+      console.log(respuestas);
+      fetch("https://api.ejemplo.com/guardarRespuestas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ respuestas })
+      })
+      .then(response => response.json())
+      .then(data => alert("Respuestas enviadas con éxito!"))
+      .catch(error => console.error("Error al enviar:", error));
+    }
+
+    mostrarPregunta();
+  </script>
+</body>
+</html>

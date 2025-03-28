@@ -840,3 +840,72 @@ h5{
         display: none;
     }   
 }
+
+.containerPreguntas {
+    /* background-color: rgb(93, 44, 44); */
+    width: 80%;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .header {
+        font-weight: 600;
+        background-color: #fbbd92;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    .gallery {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 80px;
+        justify-items: center;
+    }
+    .item {
+        background-color: #d3d3d3;
+        padding: 10px;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        font-family: 'Epilogue', sans-serif;
+        cursor: pointer;
+    }
+    .item img {
+        width: 150px;
+        height: 100px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+}
+
+.buttonsPreguntas {
+    /* background-color: green; */
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 10vh;
+    .buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+    .btn-prev {
+        background-color: #fbbd92;
+        color: #1E1E1E;
+    }
+    .btn-next {
+        background-color: #c54f68;
+        color: white;
+    }
+}
