@@ -247,11 +247,23 @@ i {
     position: relative;
 }
 
-.video_player {
+.video_player{
+    width: auto;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+    height: 88vh;
+    /* background-color: gold; */
+    object-fit: cover;  /* Ajusta el video para cubrir el contenedor sin distorsión */
+    cursor: pointer;
+    max-width: 90vw;
+}
+
+.video_player_inclusivo{
     width: auto;
     height: 95%;
     /* background-color: gold; */
     object-fit: cover;  /* Ajusta el video para cubrir el contenedor sin distorsión */
+    cursor: pointer;
 }
 
 .persona{
@@ -311,6 +323,7 @@ i {
     
     .player{
         width: 100vw;
+        height: 100vh;
         /* background-color: rgb(187, 0, 255); */
     }
 

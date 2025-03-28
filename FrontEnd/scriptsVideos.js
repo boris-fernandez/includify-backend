@@ -1,44 +1,138 @@
+// Definir los elementos globales correctamente
+const containerAnuncios = document.querySelector(".container_anuncios");
+const containerVideos = document.querySelector(".container_videos");
+const player = document.querySelector(".player");
+
+// Función para alternar la visibilidad del contenedor de anuncios
 document.querySelector(".btnExit").addEventListener("click", function() {
-  if (window.innerWidth > 1200) { // Verifica el ancho de la pantalla
-      const icon = this.querySelector("i");
-      const containerAnuncios = document.querySelector(".container_anuncios");
-      const containerVideos = document.querySelector(".container_videos");
+    if (window.innerWidth > 1200) {
+        const icon = this.querySelector("i");
 
-      // Alternar clases del icono
-      icon.classList.toggle("ti-logout");
-      icon.classList.toggle("ti-logout-2");
+        // Alternar clases del icono
+        icon.classList.toggle("ti-logout");
+        icon.classList.toggle("ti-logout-2");
 
-      // Obtener el estilo computado del contenedor de anuncios
-      const computedStyle = window.getComputedStyle(containerAnuncios);
-      const isHidden = computedStyle.display === "none";
+        // Obtener el estado actual del contenedor de anuncios
+        const isHidden = window.getComputedStyle(containerAnuncios).display === "none";
 
-      // Alternar visibilidad del contenedor de anuncios y ajustar el ancho de container_videos
-      if (isHidden) {
-          containerAnuncios.style.display = "flex"; // Mostrar el contenedor
-          containerVideos.style.width = "40vw"; // Restaurar tamaño original
-      } else {
-          containerAnuncios.style.display = "none"; // Ocultar el contenedor
-          containerVideos.style.width = "85vw"; // Ampliar el contenedor de videos
-      }
-  }
+        if (isHidden) {
+            containerAnuncios.style.display = "flex";
+            containerVideos.style.width = "40vw";
+        } else {
+            containerAnuncios.style.display = "none";
+            containerVideos.style.width = "85vw";
+        }
+    }
 });
 
 
-const player = document.querySelector(".player");
 
-// Función para verificar el ancho de .player
-const checkPlayerWidth = () => {
-    if (window.getComputedStyle(player).width === "100vw") {
-        containerAnuncios.style.display = "none";
-    } else {
-        containerAnuncios.style.display = "flex";
-    }
+
+/*###################################################*/
+
+// Configuración del Intersection Observer
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+      const video = entry.target;
+      if (entry.isIntersecting) {
+          video.play(); // Reproducir cuando el video esté visible
+      } else {
+          video.currentTime = 0;
+          video.pause(); // Pausar cuando no está visible
+      }
+  });
+}, {
+  threshold: 0.5
+});
+
+// Observar todos los videos
+const videos = document.querySelectorAll('.video_player');
+videos.forEach(video => {
+  observer.observe(video);
+});
+
+const videos_inclusivos = document.querySelectorAll('.video_player_inclusivo');
+videos_inclusivos.forEach(video_inclusivo => {
+  observer.observe(video_inclusivo);
+});
+
+videos.forEach(video => {
+  video.addEventListener('click', () => {
+      // Buscar el video inclusivo dentro del mismo .player
+      const container = video.closest('.player'); // Encuentra el contenedor principal
+      const video_inclusivo = container?.querySelector('.video_player_inclusivo'); // Busca el video inclusivo
+
+      if (video.paused) {
+          video.muted = false;
+          video.play();  // Reproducimos el video principal
+          if (video_inclusivo) video_inclusivo.play(); // Reproducimos el inclusivo si existe
+      } else {
+          video.muted = false;
+          video.pause();  // Pausamos el video principal
+          if (video_inclusivo) video_inclusivo.pause(); // Pausamos el inclusivo si existe
+      }
+  });
+});
+
+
+/* DESPLAZAMIENTO CON FLECHAS */
+
+// Seleccionamos el contenedor que tiene los videos
+const videosContainer = document.querySelector(".videos");
+
+// Seleccionamos todos los videos
+const players = document.querySelectorAll(".player");
+
+// Seleccionamos las flechas de navegación
+const arrowUp = document.querySelector(".arrow:first-child");
+const arrowDown = document.querySelector(".arrow-Down");
+
+// Índice del video actual
+let currentIndex = 0;
+
+// Función para desplazar al siguiente video
+const scrollToVideo = (index) => {
+    if (index < 0 || index >= players.length) return; // Evitar salir de rango
+    currentIndex = index;
+
+    // Obtener la posición del video seleccionado
+    const targetVideo = players[currentIndex];
+    videosContainer.scrollTo({
+        top: targetVideo.offsetTop - videosContainer.offsetTop,
+        behavior: "smooth"
+    });
 };
 
-// Configurar MutationObserver para detectar cambios en los estilos
-const observer = new MutationObserver(checkPlayerWidth);
-observer.observe(player, { attributes: true, attributeFilter: ["style"] });
+// Función para actualizar el índice según el scroll
+const updateCurrentIndexOnScroll = () => {
+    let minDiff = Infinity;
+    let newIndex = currentIndex;
 
-// Ejecutar la función al cargar la página
-checkPlayerWidth();
+    players.forEach((player, index) => {
+        const rect = player.getBoundingClientRect();
+        const diff = Math.abs(rect.top - videosContainer.getBoundingClientRect().top);
 
+        if (diff < minDiff) {
+            minDiff = diff;
+            newIndex = index;
+        }
+    });
+
+    currentIndex = newIndex;
+};
+
+// Event Listeners para las flechas
+arrowUp.addEventListener("click", (e) => {
+    e.preventDefault();
+    scrollToVideo(currentIndex - 1);
+});
+
+arrowDown.addEventListener("click", (e) => {
+    e.preventDefault();
+    scrollToVideo(currentIndex + 1);
+});
+
+// Detectar scroll manual y actualizar el índice
+videosContainer.addEventListener("scroll", () => {
+    updateCurrentIndexOnScroll();
+});
