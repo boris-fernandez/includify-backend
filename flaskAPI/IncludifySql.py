@@ -11,7 +11,7 @@ dbconfig = {
 }
 
 pool = pooling.MySQLConnectionPool(pool_name="mypool",
-                                   pool_size=5,
+                                   pool_size=1,
                                    **dbconfig)
 
 def get_connection():
@@ -27,7 +27,7 @@ def exSQL(consulta):
     response = miCursor.fetchall()
 
     miCursor.close()
-    conexion.close()  # Devuelve la conexión al pool
+    conexion.close() 
     return response
 
 # Ejemplo de uso

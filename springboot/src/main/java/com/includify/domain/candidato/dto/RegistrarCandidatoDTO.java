@@ -19,7 +19,6 @@ public record RegistrarCandidatoDTO(
         String apellidos,
         @NotBlank
         String telefono,
-        @NotBlank(message = "Las calificaciones no pueden ser nulas")
         @Size(min = 10, max = 10, message = "Deben haber excatamenta 10 respuetas")
         List< @Min(value = 0, message = "Cada respuesta no debe ser menor a 0")
         @Max(value = 3, message = "Cada respuesta no puede ser mayor a 3") Integer> respuestas,
