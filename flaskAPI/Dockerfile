@@ -1,29 +1,39 @@
-FROM python:3.10-slim
+FROM python:3.10-bookworm
 
-# Establecemos el directorio de trabajo dentro del contenedor
-WORKDIR /app
+# Configurar el directorio de trabajo
+WORKDIR /flaskAPI
 
-# Instalamos dependencias del sistema necesarias para wkhtmltopdf
-RUN apt-get update && apt-get install -y \
-    wget \
-    xfonts-75dpi \
-    xfonts-base \
-    && rm -rf /var/lib/apt/lists/*
+# Instalar dependencias del sistema
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        wget \
+        xfonts-75dpi \
+        xfonts-base \
+        libxrender1 \
+        libxext6 \
+        libfontconfig1 \
+        libssl3 \
+        && rm -rf /var/lib/apt/lists/*
 
-# Descargamos e instalamos wkhtmltopdf
-RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_amd64.deb \
-    && dpkg -i wkhtmltox_0.12.6-1.buster_amd64.deb || true \
-    && apt-get install -f -y \
-    && rm wkhtmltox_0.12.6-1.buster_amd64.deb
+# Descargar e instalar wkhtmltopdf
+RUN wget -O wkhtmltox.deb https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bookworm_amd64.deb && \
+    dpkg -i wkhtmltox.deb || apt-get install -f -y && \
+    rm wkhtmltox.deb
 
-# Copiamos todos los archivos dentro del contenedor
-COPY . /app
+# Copiar archivo de dependencias de Python
+COPY requirements.txt ./
 
-# Instalamos las dependencias de Python
+# Instalar la última versión de pip
+RUN python -m pip install --upgrade pip 
+
+# Instalar paquetes de Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Exponemos el puerto 5000
+# Copiar el código de la aplicación
+COPY . .
+
+# Exponer el puerto 5000
 EXPOSE 5000
 
-# Ejecutamos la aplicación
-CMD ["python", "app.py"]
+# Ejecutar la aplicación
+CMD ["python", "main.py"]

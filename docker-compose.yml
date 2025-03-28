@@ -15,12 +15,28 @@ services:
         depends_on:
             app_api:
                 condition: service_healthy
+        restart: 
+            always
 
     app_api:
         build: flaskAPI
         ports:
-            -"5000:5000"
+            - "5000:5000"
         environment:
-            DATA_BASE_URL: ${DATA_BASE_URL}
-            DATA_BASE_USERNAME: ${DATA_BASE_USERNAME}
-            DATA_BASE_PASSWORD: ${DATA_BASE_PASSWORD}
+            API_Pixabay: ${API_Pixabay}
+            API_Qroq: ${API_Qroq}
+            CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+            CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+            CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_HOST: ${MYSQL_HOST}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_PORT: ${MYSQL_PORT}
+            MYSQL_USER: ${MYSQL_USER}
+        restart: 
+            always
+        healthcheck:
+            test: ["CMD", "curl", "ping","-f", "localhost"]
+            interval: 30s
+            timeout: 10s
+            retries: 5
