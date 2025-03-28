@@ -24,6 +24,8 @@ def create_video():
 
     respuesta = videoTiktok.generate_video(data)  # <--- ✅ Respuesta de la API de TikTok
 
+    guionCompleto = respuesta.get_json()["message"]  # <--- ✅ Guion del video
+
     videoSeñas.generate_video_signs(guionCompleto)
 
     urlSeñas = publicVideo.upload_video("Señas")  # <--- ✅ Url del video de Señas
@@ -35,13 +37,14 @@ def create_video():
 
     respuesta = jsonify({
         "video": upload_response,
-        "videoSenas": urlSeñas,
+        "video_señas": urlSeñas,
         "calificaciones": score,
         "categoria": categoriaPuesto,
     })
 
-    return respuesta
+    print("programa terminado en "+str(fin-inicio)+" segundos")
 
+    return respuesta
 # Endpoint POST
 @app.route('/generatePdf', methods=['POST'])
 def create_cv():
