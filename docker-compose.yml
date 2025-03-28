@@ -1,22 +1,26 @@
 version: '3'
 
 services:
-  app_springboot:
+  springboot:
     build: springboot
     ports:
       - "8080:8080"
     environment:
-      API_URL_BASE: "http://app_api:5000/"
+      API_URL_BASE: "http://api:5000/"
       DATA_BASE_URL: ${DATA_BASE_URL}
       DATA_BASE_USERNAME: ${DATA_BASE_USERNAME}
       DATA_BASE_PASSWORD: ${DATA_BASE_PASSWORD}
       EXPIRATION_TIME: ${EXPIRATION_TIME}
       CLOUDINARY_URL: ${CLOUDINARY_URL}
-    depends_on:
-      - app_api
     restart: on-failure
+    networks:
+      - mynetwork
+    deploy:
+      resources:
+        limits:
+          memory: 1g
 
-  app_api:
+  api:
     build: flaskAPI
     ports:
       - "5000:5000"
@@ -32,9 +36,19 @@ services:
       MYSQL_PORT: ${MYSQL_PORT}
       MYSQL_USER: ${MYSQL_USER}
     restart: on-failure
+    networks:
+      - mynetwork
     healthcheck:
       test: ["CMD", "curl", "-f", "localhost"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 6g
+
+networks:
+  mynetwork:
+    driver: bridge

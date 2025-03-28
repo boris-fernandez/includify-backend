@@ -10,6 +10,7 @@ import com.includify.domain.empresa.Empresa;
 import com.includify.domain.empresa.EmpresaRepository;
 import com.includify.domain.usuario.Usuario;
 import com.includify.infra.apis.ConsultaApi;
+import com.includify.infra.apis.dto.EnviarAnuncioDTO;
 import com.includify.infra.apis.dto.VideoDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -46,12 +47,11 @@ public class EmpleoService {
     public Empleo createVideo(CreateVideoDTO createVideoDTO) {
         Usuario usuarioAutenticado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        VideoDTO videoDTO = consultaApi.videos(createVideoDTO.textoOriginal());
-
-        Optional<Categoria> categoria = categoriaRepository.findByCategoria(videoDTO.categoria().getCategoria());
+        VideoDTO videoDTO = consultaApi.videos(new EnviarAnuncioDTO(createVideoDTO.textoOriginal()));
+        Optional<Categoria> categoria = categoriaRepository.findByCategoria(videoDTO.categoria().categoria());
         if (categoria.isEmpty()){
             Categoria newCategoria = Categoria.builder()
-                    .categoria(videoDTO.categoria().getCategoria())
+                    .categoria(videoDTO.categoria().categoria())
                     .build();
             categoriaRepository.save(newCategoria);
         }
@@ -63,7 +63,7 @@ public class EmpleoService {
                 .video(videoDTO.video())
                 .videoSenas(videoDTO.videoSenas())
                 .empresa(empresa)
-                .categoria(videoDTO.categoria())
+                .categoria(new Categoria().builder().categoria(videoDTO.categoria().categoria()).build())
                 .build();
 
         empleoRepository.save(empleo);

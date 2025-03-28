@@ -34,8 +34,10 @@ public class ConsultaApi {
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
+
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
             return new Gson()
                     .fromJson(response.body(), responseClass);
         } catch (Exception e) {
@@ -63,7 +65,7 @@ public class ConsultaApi {
     }
 
 
-    public VideoDTO videos(String anuncio){
+    public VideoDTO videos(EnviarAnuncioDTO anuncio){
         String jsonBody = gson.toJson(anuncio);
         return consumirApiPost(jsonBody, VideoDTO.class, "generateVideo");
         

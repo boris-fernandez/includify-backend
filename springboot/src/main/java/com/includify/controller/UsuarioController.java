@@ -8,7 +8,6 @@ import com.includify.domain.usuario.dto.LoginDTO;
 import com.includify.domain.usuario.dto.MensajeDTO;
 import com.includify.domain.usuario.dto.RespuestaJWTDTO;
 import com.includify.infra.security.AuthenticacionService;
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/auth")

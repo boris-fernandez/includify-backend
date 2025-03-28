@@ -19,11 +19,10 @@ def create_video():
     inicio = time.time()  # Captura el tiempo de inicio
     
     data = request.get_json()
-
+    
     categoriaPuesto = categoriasTrabajo.generate_puesto(data["anuncio"])
 
-
-    guionCompleto = respuesta.get_json()["message"]  # <--- ✅ Guion del video
+    respuesta = videoTiktok.generate_video(data)  # <--- ✅ Respuesta de la API de TikTok
 
     videoSeñas.generate_video_signs(guionCompleto)
 
@@ -32,14 +31,14 @@ def create_video():
 
     fin = time.time()  # Captura el tiempo de finalización
 
+    upload_response = publicVideo.upload_video("Tiktok")  # <--- ✅ Respuesta de la API de Cloudinary
+
     respuesta = jsonify({
-        "guion_video": guionCompleto,
-        "video_señas": urlSeñas,
+        "video": upload_response,
+        "videoSenas": urlSeñas,
         "calificaciones": score,
         "categoria": categoriaPuesto,
     })
-
-    print("programa terminado en "+str(fin-inicio)+" segundos")
 
     return respuesta
 
@@ -74,7 +73,6 @@ def create_cv():
         return respuesta
 
     except Exception as e:
-        print(traceback.format_exc())  # 🔍 Esto imprimirá el error completo en la consola de Render
         return jsonify({"error": "Ocurrió un error en el servidor", "detalle": str(e)}), 500
 
     
@@ -139,7 +137,6 @@ def match_users():
     pks = list(map(str, pks))
 
     recomendacion = WorkClustering.procesarClustering(pks, datos, columns)
-    print(recomendacion)
     
     respuesta = jsonify({
         "recomendacion": recomendacion

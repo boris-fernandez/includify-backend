@@ -1,5 +1,7 @@
 package com.includify.infra.security;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.includify.domain.ValidacionException;
 import com.includify.domain.candidato.Candidato;
 import com.includify.domain.candidato.CandidatoRepository;
@@ -22,13 +24,16 @@ import com.includify.infra.apis.dto.EnviarCandidatoDTO;
 import com.nimbusds.jose.JOSEException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -54,6 +59,9 @@ public class AuthenticacionService {
 
     @Autowired
     private ConsultaApi consultaApi;
+
+    @Value("${cludinary.url}")
+    private String cludinaryUrl;
 
     public RespuestaJWTDTO login(LoginDTO login) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, JOSEException {
         Optional<Usuario> user = usuarioRepository.findByCorreo(login.correo());
@@ -83,18 +91,17 @@ public class AuthenticacionService {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         usuario.setContrasena(encoder.encode(usuario.getContrasena()));
 
-
         // Guardar candidato
         EnviarCandidatoDTO enviarCandidato = new EnviarCandidatoDTO(
                 candidatoDTO.respuestas(),candidatoDTO.categoria(),candidatoDTO.nombre(), candidatoDTO.apellidos(), candidatoDTO.telefono(),
                 candidatoDTO.usuario().correo());
-        CvDTO cv = consultaApi.cv(enviarCandidato);
+        CvDTO cvDTO = consultaApi.cv(enviarCandidato);
         Candidato candidato = Candidato.builder()
                 .username(candidatoDTO.nombre())
                 .pais(candidatoDTO.pais())
                 .apellidos(candidatoDTO.apellidos())
                 .telefono(candidatoDTO.telefono())
-                .cv(cv.pdf_url())
+                .cv(cvDTO.pdf_url())
                 .usuario(usuario)
                 .build();
 

@@ -5,6 +5,7 @@ import com.includify.domain.usuario.dto.CreateUserDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.NonNull;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
