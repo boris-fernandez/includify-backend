@@ -41,11 +41,11 @@ finalVideo = "video_final.mp4"
 
 # Crear directorio si no existe
 if not os.path.exists(folderAudios):
-    os.makedirs(folderAudios)
+    os.makedirs(folderAudios, exist_ok=True)
 
 # Crear directorio si no existe
 if not os.path.exists(folderVideos):
-    os.makedirs(folderVideos)
+    os.makedirs(folderVideos, exist_ok=True)
 
 # Voces disponibles
 voices = [

@@ -1,9 +1,9 @@
 import os
 import cloudinary
 import cloudinary.uploader
-import pdfkit
 from groq import Groq
 from flask import jsonify
+import convertapi
 
 # Configuration       
 cloudinary.config( 
@@ -15,9 +15,6 @@ cloudinary.config(
 
 #Api key
 GROQ_API_KEY = os.getenv('API_Qroq')
-
-# config = pdfkit.configuration(wkhtmltopdf="../wkhtmltopdf/bin/wkhtmltopdf.exe")
-config = pdfkit.configuration(wkhtmltopdf='/usr/bin/wkhtmltopdf')
 
 options = {
     "margin-top": "0mm",
@@ -241,12 +238,21 @@ def generate_pdf(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, trabajo, nombre, apell
     """
 
     # Guardar el archivo como HTML
-    # with open("pagina.html", "w", encoding="utf-8") as file:
-    #     file.write(html_content)
+    with open("pagina.html", "w", encoding="utf-8") as file:
+        file.write(html_content)
+    print("Archivo HTML generado exitosamente: pagina.html")
 
-    # print("Archivo HTML generado exitosamente: pagina.html")
 
-    pdfkit.from_string(html_content, "cv.pdf", configuration=config, options=options)
+
+
+    # Code snippet is using the ConvertAPI Python Client: https://github.com/ConvertAPI/convertapi-python
+
+    convertapi.api_credentials = 'secret_x3tc6l4mwSUDCe6T'
+    # Convertir HTML a PDF
+    convertapi.convert('pdf', {
+        'File': 'pagina.html'  # Archivo HTML de entrada
+    }, from_format='html').save_files('cv.pdf')
+
 
     response = cloudinary.uploader.upload("cv.pdf", resource_type="raw")
 
@@ -254,5 +260,3 @@ def generate_pdf(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, trabajo, nombre, apell
     pdf_url = response["secure_url"]
     
     return pdf_url, 220
-
-# generate_pdf(1,3,0,2,1,3,0,2,0,2, "programador", "Mario Enrique", "Castañeda", "929985697", "mariocode@gmail.com") #Ejemplo de como se llamaria la funcion
