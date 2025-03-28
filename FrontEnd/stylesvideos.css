@@ -154,11 +154,6 @@ i {
     flex-direction: row;
 }
 
-.container-shorts{
-    /* background-color: #ff8560; */
-    width: 80%;
-    height: 100%;
-}
 .container-arrows{
     /* background-color: #992c87 */
     width: 20%;
@@ -167,6 +162,7 @@ i {
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    max-width: 150px;
 
     .arrow{
         /* background-color: green; */
@@ -210,3 +206,136 @@ i {
         background-color: red;
     }
 } */
+
+.container-shorts{
+    /* background-color: #ff8560; */
+    width: 80%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.videos{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex;
+    position: relative;
+    flex-direction: column;  /* Organiza los videos verticalmente */
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth; /* Hace que el scroll sea suave */
+    overflow-y: scroll;  /* Permite el desplazamiento vertical */
+    scroll-snap-type: y mandatory;
+    /* background-color: red; */
+}
+
+.videos::-webkit-scrollbar {
+    display: none;
+}
+
+.player {
+    scroll-snap-align: start; /* Hace que cada video se alinee al principio del contenedor */
+    height: 92vh;
+    width: 100%;
+    /* background-color: black; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.video_player {
+    width: auto;
+    height: 95%;
+    /* background-color: gold; */
+    object-fit: cover;  /* Ajusta el video para cubrir el contenedor sin distorsión */
+}
+
+.persona{
+    background-color: rgb(197, 197, 197);
+    position: absolute;
+    width: auto;
+    height: 150px;
+    bottom: 10px;
+    right: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.253);
+    border-radius: 10px;
+    overflow: hidden; /* Evita que la imagen sobresalga */
+
+    img{
+        width: 200px;
+        height: auto;
+        display: block; /* Elimina espacios blancos indeseados */
+    }
+}
+
+.menu_movil{
+    display: none;
+}
+
+@media (max-width: 1200px) {
+    body{
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .videos{
+        background-color: rgb(255, 255, 255);
+    }
+
+    .menu_lateral{
+        height: 100vh;
+        width: 15vw;
+        display: none;
+    }
+
+    .container-arrows, .container_anuncios, .menu-exit{
+        display: none;
+    }
+
+    .container_videos{
+        width: 100vw;
+        height: 92vh;
+        /* background-color: aqua; */
+    }
+
+    .container-shorts{
+        width: 100vw;
+        /* background-color: rgb(187, 255, 0); */
+
+    }
+    
+    .player{
+        width: 100vw;
+        /* background-color: rgb(187, 0, 255); */
+    }
+
+    .menu_movil{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        background-color: #1E1E1E;
+        height: 8vh;
+        align-items: center;
+
+        button {
+            height: 6vh;
+            width: 8vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color:#2e2e2e;
+            color: white;
+        }
+
+        button:hover{
+            background-color:#565656;
+            color: white;
+        }
+    }
+    
+}
