@@ -190,10 +190,10 @@ def resize_videos():
             temp_output = os.path.join(folderVideos, f"temp_{filename}")
 
             # FFmpeg: escalar altura a 1920px y recortar el ancho al centro
-            ffmpeg.input(video_path).filter(
-                "scale", "-2", final_video_height  # Escala manteniendo la proporción
+            ffmpeg.input(video_path).filter("format", "yuv420p").filter(
+                "scale", "-2", final_video_height
             ).filter(
-                "crop", final_video_width, final_video_height  # Recorta el ancho
+                "crop", final_video_width, final_video_height
             ).output(
                 temp_output, vcodec="libx264", crf=23, preset="slow"
             ).run(overwrite_output=True)
